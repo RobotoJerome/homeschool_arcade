@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Shred the Globe · Homeschool Arcade</title>
+  <meta name="description" content="A skate-powered geography game: find countries and states on the map, name them from their flags, and learn real facts — with sources.">
+  <meta name="theme-color" content="#121214">
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="style-standard">
+  <noscript><p class="noscript">Shred the Globe needs JavaScript turned on to run.</p></noscript>
+
+  <div id="app">
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+      <a class="brand-mini" href="../index.html" title="Back to Homeschool Arcade">
+        <img src="img/icon.svg" alt="" width="28" height="28">
+        <span>Homeschool<br>Arcade</span>
+      </a>
+      <div class="topbar__actions">
+        <button class="icon-btn" id="btn-boards-top" type="button" title="Leaderboards" aria-label="Leaderboards">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v3a5 5 0 0 1-10 0V4Zm-3 1h3v2a2 2 0 0 1-3 0V5Zm13 0h3v2a2 2 0 0 1-3 0V5ZM10.5 12.5h3V16h2.5v3H8v-3h2.5z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-help-top" type="button" title="How to play" aria-label="How to play">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 15.5a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6Zm1.6-5.6c-.8.5-1 .8-1 1.6h-2.2c0-1.6.6-2.4 1.7-3.1.8-.5 1.1-.8 1.1-1.5 0-.7-.6-1.2-1.4-1.2-.9 0-1.5.6-1.6 1.5H8c.1-2.1 1.7-3.6 4-3.6 2.2 0 3.7 1.3 3.7 3.1 0 1.3-.6 2.1-2.1 3.2Z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-sound" type="button" title="Sound on/off" aria-label="Sound on/off" aria-pressed="true">
+          <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>
+          <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ============ TITLE ============ -->
+      <section class="screen screen--title is-active" id="screen-title" aria-label="Title screen">
+        <div class="title-stage">
+          <canvas id="globe" class="globe" width="900" height="900" aria-hidden="true"></canvas>
+          <div class="title-copy">
+            <p class="kicker sticker sticker--yellow">Geography for rippers</p>
+            <h1 class="logo" aria-label="Shred the Globe">
+              <span class="logo__shred">Shred</span>
+              <span class="logo__the">the</span>
+              <span class="logo__globe">Globe</span>
+            </h1>
+            <button class="deck-btn" id="deck-btn" type="button" aria-label="Kickflip the skateboard" title="Tap for a kickflip!">
+              <svg class="logo-deck" id="logo-deck" viewBox="-10 40 700 290" aria-hidden="true">
+                <defs>
+                  <path id="stg-deck" d="M70,-68 H430 C478,-68 500,-40 500,0 C500,40 478,68 430,68 H70 C22,68 0,40 0,0 C0,-40 22,-68 70,-68 Z"/>
+                  <clipPath id="stg-deck-clip"><use href="#stg-deck"/></clipPath>
+                  <pattern id="stg-checker" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="28" height="28" fill="#f3eee3"/><rect width="14" height="14" fill="#0c0c0d"/><rect x="14" y="14" width="14" height="14" fill="#0c0c0d"/></pattern>
+                  <pattern id="stg-dots" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="5.5" cy="5.5" r="2.2" fill="#000" fill-opacity=".16"/></pattern>
+                </defs>
+                <g transform="translate(165 212) rotate(-9)">
+                  <!-- speed lines -->
+                  <g class="speed"><path d="M-36,-42 H-118"/><path d="M-30,-2 H-168"/><path d="M-36,38 H-104"/></g>
+                  <!-- plywood edge -->
+                  <use href="#stg-deck" class="ply ply-3" transform="translate(4 19)"/>
+                  <use href="#stg-deck" class="ply ply-2" transform="translate(3 13)"/>
+                  <use href="#stg-deck" class="ply ply-1" transform="translate(1.5 7)"/>
+                  <!-- deck graphic (the underside) -->
+                  <g clip-path="url(#stg-deck-clip)">
+                    <rect x="-5" y="-75" width="510" height="150" class="d-base"/>
+                    <rect x="-5" y="-75" width="510" height="150" fill="url(#stg-dots)"/>
+                    <rect x="-5" y="-75" width="81" height="150" fill="url(#stg-checker)"/>
+                    <rect x="76" y="-75" width="8" height="150" fill="#0c0c0d"/>
+                    <rect x="424" y="-75" width="81" height="150" fill="#0c0c0d"/>
+                    <rect x="418" y="-75" width="8" height="150" class="d-accent"/>
+                    <path class="d-accent d-bolt" d="M478,-46 L452,-4 H468 L455,42 L489,-10 H472 L486,-46 Z"/>
+                    <text x="212" y="21" text-anchor="middle" class="d-text">SHRED</text>
+                    <g class="d-globe" transform="translate(330 0)">
+                      <circle r="34" class="d-accent"/>
+                      <ellipse rx="15" ry="34"/>
+                      <path d="M-34,0 H34 M-29.4,-17 H29.4 M-29.4,17 H29.4 M0,-34 V34"/>
+                    </g>
+                  </g>
+                  <use href="#stg-deck" class="d-outline"/>
+                  <!-- trucks + wheels -->
+                  <g class="truck" transform="translate(108 0)">
+                    <rect x="-28" y="-32" width="56" height="64" rx="8" class="t-base"/>
+                    <circle cx="-17" cy="-21" r="3.6" class="t-bolt"/><circle cx="17" cy="-21" r="3.6" class="t-bolt"/><circle cx="-17" cy="21" r="3.6" class="t-bolt"/><circle cx="17" cy="21" r="3.6" class="t-bolt"/>
+                    <rect x="-14" y="-54" width="28" height="108" rx="12" class="t-hanger"/>
+                    <rect x="-7" y="-46" width="5" height="92" rx="2.5" class="t-shine"/>
+                    <g class="wheel"><rect x="-27" y="-70" width="54" height="40" rx="15" class="w-body"/><rect x="-27" y="-54" width="54" height="8" class="w-band"/></g>
+                    <g class="wheel"><rect x="-27" y="30" width="54" height="40" rx="15" class="w-body"/><rect x="-27" y="46" width="54" height="8" class="w-band"/></g>
+                    <circle r="12" class="t-bush"/><circle r="5.5" class="t-nut"/>
+                  </g>
+                  <g class="truck" transform="translate(392 0)">
+                    <rect x="-28" y="-32" width="56" height="64" rx="8" class="t-base"/>
+                    <circle cx="-17" cy="-21" r="3.6" class="t-bolt"/><circle cx="17" cy="-21" r="3.6" class="t-bolt"/><circle cx="-17" cy="21" r="3.6" class="t-bolt"/><circle cx="17" cy="21" r="3.6" class="t-bolt"/>
+                    <rect x="-14" y="-54" width="28" height="108" rx="12" class="t-hanger"/>
+                    <rect x="-7" y="-46" width="5" height="92" rx="2.5" class="t-shine"/>
+                    <g class="wheel"><rect x="-27" y="-70" width="54" height="40" rx="15" class="w-body"/><rect x="-27" y="-54" width="54" height="8" class="w-band"/></g>
+                    <g class="wheel"><rect x="-27" y="30" width="54" height="40" rx="15" class="w-body"/><rect x="-27" y="46" width="54" height="8" class="w-band"/></g>
+                    <circle r="12" class="t-bush"/><circle r="5.5" class="t-nut"/>
+                  </g>
+                </g>
+              </svg>
+            </button>
+            <span class="deck-hint" aria-hidden="true">tap the board for a kickflip &#8599;</span>
+            <p class="title-tag">Find countries &amp; states on the map. Name them from their flags.<br>Learn real facts. Climb the leaderboard.</p>
+            <div class="title-actions">
+              <button class="btn btn--red btn--xl" id="btn-play" type="button">Play</button>
+              <button class="btn btn--paper" id="btn-boards" type="button">Leaderboards</button>
+            </div>
+            <button class="link-btn" id="btn-credits" type="button">Facts, sources &amp; credits</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SETUP ============ -->
+      <section class="screen screen--setup" id="screen-setup" aria-label="Choose your game">
+        <div class="setup">
+          <div class="setup__head">
+            <button class="back-btn" type="button" data-nav="title" aria-label="Back">&larr; Back</button>
+            <h2 class="setup__title">Set up your run</h2>
+          </div>
+
+          <div class="setup__group" role="radiogroup" aria-labelledby="lbl-style">
+            <h3 class="setup__label" id="lbl-style"><span class="num">1</span> Pick your style</h3>
+            <div class="choices">
+              <button class="choice" type="button" role="radio" data-key="style" data-val="standard">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19"/><path d="M5 24h38M24 5c6 6 6 32 0 38M24 5c-6 6-6 32 0 38M9 14h30M9 34h30"/></svg></span>
+                <span class="choice__title">Standard</span>
+                <span class="choice__sub">Map, flag, population &amp; a fun fact about every place.</span>
+              </button>
+              <button class="choice choice--skate" type="button" role="radio" data-key="style" data-val="skate">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="18" width="40" height="9" rx="4.5"/><circle cx="13" cy="34" r="4"/><circle cx="35" cy="34" r="4"/><path d="M9 29h8M31 29h8"/></svg></span>
+                <span class="choice__title">Skate Mode</span>
+                <span class="choice__sub">Everything in Standard, plus the local skate scene and its legends.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setup__group" role="radiogroup" aria-labelledby="lbl-game">
+            <h3 class="setup__label" id="lbl-game"><span class="num">2</span> Pick your game</h3>
+            <div class="choices">
+              <button class="choice" type="button" role="radio" data-key="game" data-val="spot">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 44s14-13.5 14-24a14 14 0 1 0-28 0c0 10.5 14 24 14 24Z"/><circle cx="24" cy="20" r="5"/></svg></span>
+                <span class="choice__title">Spot Hunt</span>
+                <span class="choice__sub">We name a place. You find it on the map.</span>
+              </button>
+              <button class="choice" type="button" role="radio" data-key="game" data-val="flag">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 44V5M10 7h26l-5 8 5 8H10"/></svg></span>
+                <span class="choice__title">Flag Flip</span>
+                <span class="choice__sub">See the flag, fact &amp; population. Pick the right place from 5.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setup__group" role="radiogroup" aria-labelledby="lbl-turf">
+            <h3 class="setup__label" id="lbl-turf"><span class="num">3</span> Pick your turf</h3>
+            <div class="choices">
+              <button class="choice" type="button" role="radio" data-key="turf" data-val="world">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19"/><path d="M12 13c4 2 6 0 9 3s-1 6 3 8 7-2 8 3-4 6-2 9M30 7c-1 3 2 4 4 6"/></svg></span>
+                <span class="choice__title">World</span>
+                <span class="choice__sub" data-count="world"></span>
+              </button>
+              <button class="choice" type="button" role="radio" data-key="turf" data-val="usa">
+                <span class="choice__icon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 14l9-2 13 2 10-1 4 3-2 5 3 3-6 8-4 1-2 6-3-5-9 1-4-4-6-1-3-6z"/></svg></span>
+                <span class="choice__title">USA</span>
+                <span class="choice__sub" data-count="usa"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="setup__go">
+            <p class="setup__summary" id="setup-summary"></p>
+            <button class="btn btn--red btn--xl" id="btn-start" type="button">Drop in &rarr;</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ GAME ============ -->
+      <section class="screen screen--game" id="screen-game" aria-label="Game">
+        <div class="hud">
+          <div class="hud__left">
+            <div class="hud__stat"><span class="hud__k">Round</span><span class="hud__v" id="hud-round">1/15</span></div>
+            <div class="hud__stat"><span class="hud__k">Points</span><span class="hud__v" id="hud-score">0</span></div>
+            <div class="hud__stat hud__stat--streak"><span class="hud__k">Streak</span><span class="hud__v" id="hud-streak">0</span></div>
+            <div class="hud__stat"><span class="hud__k">Time</span><span class="hud__v" id="hud-time">0:00</span></div>
+          </div>
+          <div class="hud__mode" id="hud-mode"></div>
+          <div class="hud__right">
+            <div class="quit" id="quit">
+              <button class="icon-btn icon-btn--small" id="btn-quit" type="button" title="Quit run" aria-label="Quit run">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>
+              </button>
+              <span class="quit__confirm">Quit run?
+                <button type="button" class="mini-btn" id="btn-quit-yes">Yes</button>
+                <button type="button" class="mini-btn mini-btn--ghost" id="btn-quit-no">No</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spot Hunt -->
+        <div class="play play--spot" id="play-spot">
+          <div class="prompt" id="spot-prompt" aria-live="polite">
+            <span class="prompt__label">Find</span>
+            <span class="prompt__name" id="spot-name"></span>
+            <span class="prompt__where" id="spot-where" hidden></span>
+          </div>
+          <div class="mapbox" id="mapbox">
+            <div class="map-msg" id="map-msg" aria-live="polite"></div>
+            <div class="zoom-ctrls">
+              <button class="zbtn" type="button" id="zoom-in" aria-label="Zoom in">+</button>
+              <button class="zbtn" type="button" id="zoom-out" aria-label="Zoom out">&minus;</button>
+              <button class="zbtn zbtn--reset" type="button" id="zoom-reset" aria-label="Re-center map" title="Re-center">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H7.4l3.3 3.3-1.4 1.4L6 7.4V10H4V4Zm10 0h6v6h-2V7.4l-3.3 3.3-1.4-1.4L16.6 6H14V4ZM4 14h2v2.6l3.3-3.3 1.4 1.4L7.4 18H10v2H4v-6Zm14 0h2v6h-6v-2h2.6l-3.3-3.3 1.4-1.4 3.3 3.3V14Z"/></svg>
+              </button>
+            </div>
+            <p class="map-hint">Scroll or pinch to zoom &middot; drag to move &middot; tiny places have a dot</p>
+            <p class="rotate-tip">Tip: turn your phone sideways for a bigger map</p>
+          </div>
+        </div>
+
+        <!-- Flag Flip -->
+        <div class="play play--flag" id="play-flag">
+          <div class="clue card" id="clue">
+            <div class="clue__flagwrap"><img class="clue__flag" id="clue-flag" alt="Mystery flag"></div>
+            <div class="clue__body">
+              <p class="clue__label">Mystery <span id="clue-kind">country</span></p>
+              <p class="clue__pop"><span class="clue__k">Population</span> <strong id="clue-pop"></strong></p>
+              <p class="clue__fact" id="clue-fact"></p>
+              <div class="clue__skate" id="clue-skate"></div>
+            </div>
+          </div>
+          <div class="options" id="options" role="group" aria-label="Pick the answer"></div>
+        </div>
+      </section>
+
+      <!-- ============ END ============ -->
+      <section class="screen screen--end" id="screen-end" aria-label="Run complete">
+        <div class="end">
+          <p class="end__kicker sticker sticker--yellow" id="end-board-name"></p>
+          <h2 class="end__title">Run complete</h2>
+          <div class="end__score"><span id="end-score">0</span><small>/<span id="end-total">15</span></small></div>
+          <p class="end__rank" id="end-rank"></p>
+          <div class="end__stats">
+            <div><span>Accuracy</span><strong id="end-acc"></strong></div>
+            <div><span>Time</span><strong id="end-time"></strong></div>
+            <div><span>Best streak</span><strong id="end-streak"></strong></div>
+          </div>
+
+          <div class="initials card" id="initials" hidden>
+            <p class="initials__head">New high score! Enter your initials</p>
+            <div class="initials__wrap">
+              <div class="initials__slots" id="initials-slots"></div>
+              <input class="initials__input" id="initials-input" type="text" maxlength="3" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Your initials, up to 3 letters">
+            </div>
+            <p class="initials__msg" id="initials-msg" aria-live="assertive"></p>
+            <button class="btn btn--red" id="btn-initials" type="button">Save score</button>
+          </div>
+
+          <div class="end__board" id="end-board"></div>
+
+          <div class="end__review" id="end-review"></div>
+
+          <div class="end__actions">
+            <button class="btn btn--red" id="btn-again" type="button">Run it back</button>
+            <button class="btn btn--paper" id="btn-menu" type="button">Main menu</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ LEADERBOARDS ============ -->
+      <section class="screen screen--boards" id="screen-boards" aria-label="Leaderboards">
+        <div class="boards">
+          <div class="setup__head">
+            <button class="back-btn" type="button" data-nav="back" aria-label="Back">&larr; Back</button>
+            <h2 class="setup__title">Leaderboards</h2>
+          </div>
+          <div class="tabs" id="tabs-style" role="tablist"></div>
+          <div class="tabs tabs--small" id="tabs-game" role="tablist"></div>
+          <div class="boards__table" id="boards-table"></div>
+          <button class="link-btn link-btn--danger" id="btn-reset-board" type="button">Reset this board</button>
+          <p class="boards__note">Scores are saved in this web browser on this device.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ REVEAL MODAL ============ -->
+  <div class="modal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="reveal-name" hidden>
+    <div class="modal__card reveal" id="reveal-card"></div>
+  </div>
+
+  <!-- ============ INFO MODAL ============ -->
+  <div class="modal" id="info" role="dialog" aria-modal="true" aria-labelledby="info-title" hidden>
+    <div class="modal__card info">
+      <button class="icon-btn icon-btn--small modal__x" type="button" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>
+      </button>
+      <div id="info-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRM MODAL ============ -->
+  <div class="modal" id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text" hidden>
+    <div class="modal__card confirm">
+      <p id="confirm-text"></p>
+      <div class="confirm__actions">
+        <button class="btn btn--red" id="confirm-yes" type="button">Yes</button>
+        <button class="btn btn--paper" id="confirm-no" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script src="js/lib/d3.min.js"></script>
+  <script src="js/lib/topojson-client.min.js"></script>
+  <script src="data/world-topo.js"></script>
+  <script src="data/us-topo.js"></script>
+  <script src="data/geo-data.js"></script>
+  <script src="data/skate-data.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

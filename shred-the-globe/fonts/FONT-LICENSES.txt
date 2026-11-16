@@ -1,0 +1,7 @@
+Fonts bundled with Shred the Globe (self-hosted so the game works offline):
+
+- Anton            by Vernon Adams        — SIL Open Font License 1.1 (see OFL-1.1.txt)
+- Barlow           by Jeremy Tribby       — SIL Open Font License 1.1 (see OFL-1.1.txt)
+- Permanent Marker by Font Diner (Sideshow) — Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+
+Font files were obtained from the Fontsource project (https://fontsource.org), which repackages Google Fonts.
