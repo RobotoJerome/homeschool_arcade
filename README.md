@@ -24,6 +24,13 @@ Each run is 15 rounds: 1 point per correct answer, and the faster time breaks ti
 
 **Where scores are saved:** once the shared leaderboard is connected, every player sees the same Top 10 boards. The scores live in a Google Sheet you own, and setup takes about 5 minutes: see [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md). Until then, or whenever the internet is down, each device keeps its own scores so the game always works.
 
+**Security & privacy:**
+- The leaderboard script can only use its own spreadsheet, and visitors can only read the Top 10 and submit checked scores.
+- The game pages tell the browser to run code only from this site, and to send data only to the leaderboard.
+- There are no ads, trackers or analytics. The only player info stored is 3-letter initials.
+
+See "Keeping it safe" in [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md).
+
 ## Where the facts come from
 
 - Every fact shows its source link in the game. Facts were checked in November 2026 against Encyclopaedia Britannica and Wikipedia. Anything that couldn't be confirmed was left out.

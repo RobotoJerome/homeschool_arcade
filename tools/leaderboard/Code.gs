@@ -7,10 +7,20 @@
  * delete a row at any time to remove that score.
  *
  * Setup: see LEADERBOARD-SETUP.md (about 5 minutes, one time).
+ *
+ * Security notes:
+ *  - The @OnlyCurrentDoc line below tells Google this script may ONLY use the one
+ *    spreadsheet it's attached to, never your other Sheets or files.
+ *  - Visitors can only read the Top 10 lists and submit scores that pass the checks below.
+ *  - Don't give anyone else edit access to this spreadsheet: editors can change this script.
  */
 
+/** @OnlyCurrentDoc */
+
+const SCRIPT_VERSION = 2;
 const SHEET_NAME = 'Scores';
 const TOP_N = 10;
+const KEEP_PER_BOARD = 50;        // older/lower scores beyond the best 50 per board are removed automatically
 const MAX_ROUNDS = 15;
 const CACHE_SECONDS = 60;
 const MAX_SAVES_PER_MINUTE = 30; // simple protection against spam
@@ -33,7 +43,7 @@ function setup() {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   try {
-    if (p.action === 'ping') return json_({ ok: true });
+    if (p.action === 'ping') return json_({ ok: true, version: SCRIPT_VERSION });
     if (p.action === 'top') {
       checkBoard_(p.board);
       return json_({ ok: true, board: p.board, entries: topFor_(p.board) });
@@ -47,8 +57,9 @@ function doGet(e) {
 /** POST {"action":"add","board":"...","initials":"ABC","points":12,"outOf":15,"timeMs":83000} */
 function doPost(e) {
   try {
-    const body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    if (body.action !== 'add') return json_({ ok: false, error: 'Unknown request.' });
+    let body;
+    try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (parseErr) { return json_({ ok: false, error: 'Bad request.' }); }
+    if (!body || body.action !== 'add') return json_({ ok: false, error: 'Unknown request.' });
 
     const board = String(body.board || '');
     checkBoard_(board);
@@ -73,7 +84,9 @@ function doPost(e) {
       const id = Utilities.getUuid().slice(0, 8);
       const date = Utilities.formatDate(now, Session.getScriptTimeZone(), 'MMM d, yyyy');
       // The leading ' keeps Sheets from turning "1:23" into a clock time.
-      getSheet_().appendRow([board, initials, points, outOf, "'" + formatTime_(timeMs), timeMs, date, now, id]);
+      const sheet = getSheet_();
+      sheet.appendRow([board, initials, points, outOf, "'" + formatTime_(timeMs), timeMs, date, now, id]);
+      prune_(sheet, board);
       cache.remove('top:' + board);
       return json_({ ok: true, id: id, board: board, entries: topFor_(board) });
     } finally {
@@ -106,6 +119,24 @@ function topFor_(board) {
   const top = entries.slice(0, TOP_N);
   cache.put('top:' + board, JSON.stringify(top), CACHE_SECONDS);
   return top;
+}
+
+/** Keep only the best KEEP_PER_BOARD rows for a board, so spam can't make the sheet grow forever. */
+function prune_(sheet, board) {
+  const last = sheet.getLastRow();
+  if (last < 2) return;
+  const rows = sheet.getRange(2, 1, last - 1, HEADERS.length).getValues();
+  const mine = [];
+  rows.forEach(function (r, idx) {
+    if (String(r[0]) !== board) return;
+    mine.push({ row: idx + 2, s: toInt_(r[2]) || 0, t: toInt_(r[5]) || Number.MAX_SAFE_INTEGER, at: r[7] instanceof Date ? r[7].getTime() : 0 });
+  });
+  if (mine.length <= KEEP_PER_BOARD) return;
+  mine.sort(function (a, b) { return (b.s - a.s) || (a.t - b.t) || (a.at - b.at); });
+  mine.slice(KEEP_PER_BOARD)
+    .map(function (m) { return m.row; })
+    .sort(function (a, b) { return b - a; }) // delete from the bottom up so row numbers don't shift
+    .forEach(function (row) { sheet.deleteRow(row); });
 }
 
 function getSheet_() {

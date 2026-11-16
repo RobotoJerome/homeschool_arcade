@@ -50,12 +50,33 @@ To do it yourself instead, edit `shred-the-globe/js/config.js` on GitHub and pas
 
 ## Built-in protections
 
-- Initials must be 1–3 letters, and the blocked words are rejected by the server too.
-- Scores must make sense (no more than 15 points, and no impossibly fast times).
-- At most 30 scores can be saved per minute, which stops spam.
+- **One spreadsheet only.** The script's `@OnlyCurrentDoc` line means Google lets it use only this leaderboard spreadsheet, never your other Sheets, Drive files or email.
+- **Two actions only.** Visitors can read the Top 10 lists and submit a score. They can't see the spreadsheet itself, pick a different sheet, or run their own code.
+- **Checked scores.** Initials must be 1–3 letters (blocked words are rejected by the server too), and scores must make sense: no more than 15 points, and no impossibly fast times.
+- **Spam limits.** At most 30 scores can be saved per minute. Each board keeps only its best 50 scores, so the sheet can't grow forever.
 
 A determined tech-savvy player could still fake a score, as on any website without user logins. If that happens, just delete the row.
 
-## If you change the script later
+## Keeping it safe
 
-Click **Deploy → Manage deployments**, then the pencil ✏️ icon. Set **Version** to **New version** and click **Deploy**. The URL stays the same, so the game keeps working.
+- **Don't share edit access** to the leaderboard spreadsheet. Anyone who can edit it can also edit the script, which runs under your account. Leave its sharing set to **Restricted**.
+- Use **2-Step Verification** on your Google account.
+- **To shut the leaderboard off instantly:** in Apps Script, click **Deploy → Manage deployments → Archive**. The game then quietly falls back to keeping scores on each device.
+
+## Updating the script (including the Nov 2026 security update)
+
+If you set up the leaderboard before the security update, do this once. It locks the script to the leaderboard spreadsheet only.
+
+1. Open the leaderboard spreadsheet and click **Extensions → Apps Script**.
+2. If the project is still called "Untitled project", click that name and rename it **Shred the Globe Leaderboard**. That makes the next step easier.
+3. Select all the code in the editor and delete it. Then paste in the latest version from
+   https://raw.githubusercontent.com/RobotoJerome/homeschool_arcade/main/tools/leaderboard/Code.gs
+   and click **Save** 💾.
+4. Remove the old, broader permission:
+   1. Go to **https://myaccount.google.com/connections**.
+   2. Find **Shred the Globe Leaderboard** (or "Untitled project").
+   3. Click it, then **Delete all connections** (or **Remove access**).
+5. Back in Apps Script, choose **setup** in the toolbar and click **▶ Run**. Approve it again (Advanced → Go to … (unsafe) → Allow). This time Google should only ask to *"View and manage spreadsheets that this application has been installed in."*
+6. Click **Deploy → Manage deployments**, click the pencil ✏️ icon, set **Version** to **New version**, and click **Deploy**.
+
+The URL stays the same, so the game keeps working. Use these same steps 1, 3 and 6 for any future script changes.
