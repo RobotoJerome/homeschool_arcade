@@ -534,24 +534,41 @@
       return await res.json();
     } finally { clearTimeout(timer); }
   }
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function fetchTop(key) {
+    const j = await lbRequest({ action: 'top', board: key });
+    if (!j.ok) throw new Error(j.error);
+    return (j.entries || []).sort(cmpEntry);
+  }
   const Boards = {
-    // -> { list, offline }
+    // -> { list, offline }   (tries twice: Google sometimes hiccups while the script wakes up)
     async list(key) {
       if (!ONLINE) return { list: localBoards.get(key), offline: false };
-      try {
-        const j = await lbRequest({ action: 'top', board: key });
-        if (!j.ok) throw new Error(j.error);
-        return { list: (j.entries || []).sort(cmpEntry), offline: false };
-      } catch (e) { return { list: localBoards.get(key), offline: true }; }
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try { return { list: await fetchTop(key), offline: false }; } catch (e) { if (attempt === 0) await pause(1200); }
+      }
+      return { list: localBoards.get(key), offline: true };
     },
     // -> { list, id, offline } or { error }
     async add(key, entry) {
       if (ONLINE) {
-        try {
-          const j = await lbRequest(null, { action: 'add', board: key, initials: entry.i, points: entry.s, outOf: entry.n, timeMs: entry.t });
-          if (!j.ok) return { error: j.error || 'Could not save that score.' };
-          return { list: (j.entries || []).sort(cmpEntry), id: j.id, offline: false };
-        } catch (e) { /* no internet — save it on this device below */ }
+        const payload = { action: 'add', board: key, initials: entry.i, points: entry.s, outOf: entry.n, timeMs: entry.t };
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const j = await lbRequest(null, payload);
+            if (!j.ok) return { error: j.error || 'Could not save that score.' };
+            return { list: (j.entries || []).sort(cmpEntry), id: j.id, offline: false };
+          } catch (e) {
+            // The save may have gone through even though the reply got lost: check before sending it again.
+            try {
+              const list = await fetchTop(key);
+              const hit = list.find((x) => x.i === entry.i && +x.s === entry.s && +x.t === entry.t);
+              if (hit) return { list, id: hit.id, offline: false };
+            } catch (e2) { /* still unreachable */ }
+            if (attempt === 0) await pause(1200);
+          }
+        }
+        // no internet — save it on this device below
       }
       const d = new Date();
       const local = Object.assign({}, entry, { d: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), at: d.getTime(), id: 'L' + d.getTime() });

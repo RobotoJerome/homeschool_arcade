@@ -8,5 +8,5 @@
  *   - Left empty, each device keeps its own scores (the game still works fine).
  */
 window.STG_CONFIG = {
-  leaderboardUrl: ''
+  leaderboardUrl: 'https://script.google.com/macros/s/AKfycbzl07rMpvTUfcd3wSat1Qhak13e_LBrvYCBtS0SBo76g28E_5pfIRLhuKiijevZxTOI7A/exec'
 };
