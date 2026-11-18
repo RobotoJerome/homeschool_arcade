@@ -84,10 +84,22 @@ Set `-CensusYear` to the newest year the Census Bureau has published.
 
 The site is plain HTML, CSS and JavaScript with no build step and nothing to install. The code lives at https://github.com/RobotoJerome/homeschool_arcade.
 
-To publish it as a website with GitHub Pages:
+The site is published with GitHub Pages at **https://homeschoolarcade.games** (domain registered at Namecheap).
 
-1. Open the repo's **Settings → Pages**.
-2. Under "Build and deployment", choose **Deploy from a branch**.
-3. Choose branch **main** and folder **/ (root)**, then click **Save**.
+- **GitHub Pages:** in the repo's **Settings → Pages**, choose **Deploy from a branch**, then **main** and **/ (root)**. The custom domain is `homeschoolarcade.games`, and "Enforce HTTPS" is on. The `CNAME` file in this folder stores the domain, and `.nojekyll` tells GitHub to serve the files as-is.
+- **Namecheap DNS** (Domain List → Manage → Advanced DNS):
 
-The site appears at `https://robotojerome.github.io/homeschool_arcade/` within a minute or two.
+  | Type | Host | Value |
+  |---|---|---|
+  | A Record | `@` | `185.199.108.153` |
+  | A Record | `@` | `185.199.109.153` |
+  | A Record | `@` | `185.199.110.153` |
+  | A Record | `@` | `185.199.111.153` |
+  | AAAA Record | `@` | `2606:50c0:8000::153` |
+  | AAAA Record | `@` | `2606:50c0:8001::153` |
+  | AAAA Record | `@` | `2606:50c0:8002::153` |
+  | AAAA Record | `@` | `2606:50c0:8003::153` |
+  | CNAME Record | `www` | `robotojerome.github.io.` |
+  | TXT Record | `_github-pages-challenge-RobotoJerome` | the code GitHub gives you when you verify the domain |
+
+- **Backup address:** the site also answers at `https://robotojerome.github.io/homeschool_arcade/`, which redirects to the custom domain.
