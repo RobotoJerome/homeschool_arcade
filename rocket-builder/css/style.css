@@ -1,0 +1,26 @@
+/* Rocket Builder: everything is drawn on one full-screen canvas. */
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0b0b1a;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#game {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  outline: none;
+}
+.noscript {
+  color: #fff;
+  font: 20px system-ui, sans-serif;
+  padding: 24px;
+}

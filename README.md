@@ -1,6 +1,9 @@
 # Homeschool Arcade
 
-Learning games built for our homeschool. The first game is **Shred the Globe**, a skate-themed geography game.
+Learning games built for our homeschool:
+
+- **Shred the Globe**: a skate-themed geography game (middle school).
+- **Rocket Builder**: a space math adventure (elementary).
 
 ## Play it on this computer
 
@@ -31,6 +34,31 @@ Each run is 15 rounds: 1 point per correct answer, and the faster time breaks ti
 
 See "Keeping it safe" in [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md).
 
+## Rocket Builder
+
+A little space explorer crash-lands and has to rebuild the rocket. There are 4 planets, one for each kind of math:
+
+| Planet | Math | Hidden power-ups |
+|---|---|---|
+| 1 · Sprout (green meadow) | Adding (+) | Zoom Shoes (run faster), Spring Boots (hop over 1 tile of water) |
+| 2 · Frost (snow and ice) | Subtracting (−) | Power Laser (stronger, breaks cracked rocks), Extra Heart |
+| 3 · Ember (lava desert) | Multiplying (×) | Rocket Boots (hop over 2 tiles), Extra Heart |
+| 4 · Fungi (glowing mushrooms) | Dividing (÷) | Mega Laser (strongest), Gem Magnet |
+
+- **Rocket parts:** each planet hides 4 part crates. Solve 3 problems to open a crate. The last part is guarded by a big boss alien. With all 4 parts, walk back to the rocket to blast off. The rocket keeps every part, so it grows over the 4 planets.
+- **Aliens:** zap them first with the laser (Space) to start a battle without getting hurt. Each right answer fires your laser. A wrong answer costs a heart, and then the child tries the same problem again with a picture hint. With no hearts left, the explorer goes back to the rocket with full hearts, and nothing found is lost. Standing at the rocket also refills hearts.
+- **Levels:**
+  - Cadet ★ (ages 5–6): adding and taking away within 10, times and divide with 1–5. Picture hints are always on, and an arrow points to the next part.
+  - Pilot ★★ (ages 7–8): within 20, the 1–5 times tables up to ×10, and some "missing number" problems (7 + ? = 12).
+  - Captain ★★★ (ages 9–10): within 100, times tables up to 10 × 10, and matching division.
+- **Picture hints:** the light-bulb button shows dots for adding and taking away, tens-and-ones blocks for big numbers, arrays of rows for times, and equal groups for dividing.
+- **Very little reading:** the speaker button reads each problem out loud, and "Talk" in the pause menu reads everything automatically (on by default). Music, sound and Talk can each be turned off in the pause menu.
+- **Controls:** arrow keys or WASD to walk, Space to zap, 1–4 (or click, or Enter on the outlined answer) to answer, M for the map, Esc to pause. Space never picks an answer, so zapping can't answer a problem by accident. On a tablet or phone, there's an on-screen joystick and a zap button.
+- **Saving:** progress saves in the browser on this device, and "Keep going" picks up on the same planet.
+- **For grown-ups:** add `?debug&world=3&level=1` to the game's address to jump to a planet (world 1–4, level 0–2). In debug mode the browser console also confirms that every part on every planet can be reached.
+
+All the art, music and sound effects are made by the game's own code, so there are no image, sound or font files to download.
+
 ## Where the facts come from
 
 - Every fact shows its source link in the game. Facts were checked in November 2026 against Encyclopaedia Britannica and Wikipedia. Anything that couldn't be confirmed was left out.
@@ -53,6 +81,16 @@ shred-the-globe/
   data/us-topo.js          US state shapes
   flags/                   243 flag images
   fonts/                   self-hosted fonts + licenses
+rocket-builder/
+  index.html               the game (everything is drawn on one canvas)
+  js/engine.js             screen, pixel font, keyboard/touch, sound, music, read-aloud, saving
+  js/art.js                pixel-art explorer, aliens, trees, icons and the rocket
+  js/mathgen.js            makes the math problems and the picture hints
+  js/worlds.js             the 4 planet maps and what is hidden where
+  js/play.js               walking, hopping, lasers, aliens, crates, HUD, map
+  js/ui.js                 math panel, item cards, pause menu
+  js/scenes.js             title, level picker, planet intro, blast-off, ending
+  js/main.js               saving progress and the main loop
 tools/
   source/*.json            the hand-checked country & state facts (edit these)
   build-data.ps1           rebuilds data/geo-data.js (can refresh populations)
