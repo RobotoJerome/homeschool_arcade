@@ -146,7 +146,23 @@ window.RB = window.RB || {};
   I.down = (a) => ACT[a].some((k) => I.keys[k]);
   I.hit = (a) => ACT[a].some((k) => I.pressed[k]);
   const BLOCK = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab']);
+
+  // ---- keep the page from zooming by accident ----
+  // The game always resizes itself to fit the window, so zooming never helps and kids get stuck zoomed in.
+  const ZOOM_KEYS = new Set(['Equal', 'Minus', 'NumpadAdd', 'NumpadSubtract']);
+  const stop = (e) => { if (e.cancelable) e.preventDefault(); };
+  // Ctrl + mouse wheel, and two-finger trackpad pinch (browsers report pinch as Ctrl + wheel)
+  window.addEventListener('wheel', (e) => { if (e.ctrlKey || e.metaKey) stop(e); }, { passive: false });
+  // Safari's trackpad and iPad pinch gestures
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach((t) => document.addEventListener(t, stop, { passive: false }));
+  // Touch screens: pinch, drag-to-scroll and double-tap zoom. (The game reads taps through pointer events, which still work.)
+  document.addEventListener('touchmove', stop, { passive: false });
+  canvas.addEventListener('touchstart', stop, { passive: false });
+  canvas.addEventListener('touchend', stop, { passive: false });
+  document.addEventListener('dblclick', stop);
   window.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + plus or minus would zoom the page. Ctrl/Cmd + 0 still works, to reset zoom if needed.
+    if ((e.ctrlKey || e.metaKey) && ZOOM_KEYS.has(e.code)) { e.preventDefault(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (!I.keys[e.code]) I.pressed[e.code] = true;
     I.keys[e.code] = true;
@@ -168,7 +184,7 @@ window.RB = window.RB || {};
   }
   canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } pev('down', e); });
   canvas.addEventListener('pointermove', (e) => pev('move', e));
-  canvas.addEventListener('pointerup', (e) => pev('up', e));
+  canvas.addEventListener('pointerup', (e) => { RB.A.unlock(); pev('up', e); }); // tablets only allow sound to start when a finger lifts
   canvas.addEventListener('pointercancel', (e) => pev('cancel', e));
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
   I.taps = () => I.events.filter((e) => e.type === 'down');
