@@ -39,8 +39,9 @@
   };
   function panel(g, w, h, color) {
     g.fillStyle = 'rgba(11,11,26,0.6)'; g.fillRect(0, 0, D.W, D.H);
-    w = Math.min(w, D.W - 8); h = Math.min(h, D.H - 8);
-    const x = Math.round((D.W - w) / 2), y = Math.round((D.H - h) / 2);
+    const availH = D.bottom(); // keep answer buttons clear of the phone's own buttons
+    w = Math.min(w, D.W - 8); h = Math.min(h, availH - 8);
+    const x = Math.round((D.W - w) / 2), y = Math.round((availH - h) / 2);
     g.fillStyle = '#000'; g.fillRect(x + 3, y + 3, w, h);
     RB.box(g, x, y, w, h, color || PANEL, INK);
     g.fillStyle = PANEL2; g.fillRect(x + 2, y + 2, w - 4, 2);
@@ -316,14 +317,14 @@
       { label: lab('TALK', st.talk), act: () => { st.talk = !st.talk; items[4].label = lab('TALK', st.talk); RB.saveSettings(); if (st.talk) RB.speak('I will read to you.'); } },
       { label: 'QUIT', act: () => { P.modal = null; RB.saveGame(); RB.go('title'); } },
     ];
-    const S = { t: 0, menu: UI.menu(items, { cols: 2 }) };
+    const S = { t: 0, isPause: true, menu: UI.menu(items, { cols: 2 }) };
     S.update = (dt) => { S.t += dt; if (S.t > 0.2 && I.hit('back')) { P.modal = null; return; } S.menu.update(); };
     S.draw = (g) => {
       const p = panel(g, 260, 170);
       F.draw(g, 'PAUSED', p.x + p.w / 2, p.y + 10, { s: 2, c: '#ffd23f', a: 'center', o: INK });
       const bw = Math.floor((p.w - 30) / 2);
       items.forEach((it, i) => { it.r = { x: p.x + 10 + (i % 2) * (bw + 10), y: p.y + 34 + Math.floor(i / 2) * 32, w: bw, h: 26 }; UI.button(g, it, i === S.menu.focus, { fill: i === 0 ? '#5dff9e' : '#ffffff', top: '#fff' }); });
-      F.draw(g, 'PLANET ' + (RB.G.world + 1) + ' · ' + M.LEVELS[RB.G.level].name, p.x + p.w / 2, p.y + p.h - 12, { c: '#8d8ab3', a: 'center' });
+      F.draw(g, 'PLANET ' + (RB.G.world + 1) + ' - ' + M.LEVELS[RB.G.level].name, p.x + p.w / 2, p.y + p.h - 12, { c: '#8d8ab3', a: 'center' });
     };
     P.modal = S;
   };

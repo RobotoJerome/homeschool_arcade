@@ -11,7 +11,7 @@ Open the `homeschoolarcade.games` folder and **double-click `index.html`**. It o
 
 (Optional: to preview it the way it will look once it's hosted, run `tools\serve.ps1` in PowerShell, then open http://localhost:8080/.)
 
-On the home page, each game card shows its subject (black tag) and age level (red tag). The same info is stored on the card as `data-subjects` and `data-ages`, so a sort or filter bar can be added once there are more games.
+On the home page, each game card shows its subject (black tag) and age level (red tag), and the **About** button (top right) opens a short note about the site. The same info is stored on the card as `data-subjects` and `data-ages`, so a sort or filter bar can be added once there are more games.
 
 ## Shred the Globe
 
@@ -25,7 +25,7 @@ On the home page, each game card shows its subject (black tag) and age level (re
 
 Each run is 15 rounds: 1 point per correct answer, and the faster time breaks ties. The clock pauses while the fact cards are open.
 
-**Where scores are saved:** once the shared leaderboard is connected, every player sees the same Top 10 boards. The scores live in a Google Sheet you own, and setup takes about 5 minutes: see [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md). Until then, or whenever the internet is down, each device keeps its own scores so the game always works.
+**Where scores are saved:** every game on the site shares **one** online leaderboard, a Google Sheet you own, so every player sees the same Top 10 boards. See [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md). Until then, or whenever the internet is down, each device keeps its own scores so the game always works.
 
 **Security & privacy:**
 - The leaderboard script can only use its own spreadsheet, and visitors can only read the Top 10 and submit checked scores.
@@ -55,6 +55,7 @@ A little space explorer crash-lands and has to rebuild the rocket. There are 4 p
 - **Very little reading:** the speaker button reads each problem out loud, and "Talk" in the pause menu reads everything automatically (on by default). Music, sound and Talk can each be turned off in the pause menu.
 - **Controls:** arrow keys or WASD to walk, Space to zap, 1–4 (or click, or Enter on the outlined answer) to answer, M for the map, Esc to pause. Space never picks an answer, so zapping can't answer a problem by accident. On a tablet or phone, there's an on-screen joystick and a zap button.
 - **Saving:** progress saves in the browser on this device, and "Keep going" picks up on the same planet.
+- **Leaderboard:** one Top 10 per level (Cadet, Pilot, Captain) on the shared arcade leaderboard. The score is the number of stars collected across all 4 planets, and a faster play time breaks ties (the clock stops while the game is paused). A score that makes the Top 10 gets arcade-style initials at the end, and "★ TOP 10" on the title screen shows the boards.
 - **For grown-ups:** add `?debug&world=3&level=1` to the game's address to jump to a planet (world 1–4, level 0–2). In debug mode the browser console also confirms that every part on every planet can be reached.
 
 All the art, music and sound effects are made by the game's own code, so there are no image, sound or font files to download.
@@ -70,7 +71,11 @@ All the art, music and sound effects are made by the game's own code, so there a
 ## Folder guide
 
 ```
-index.html                 Homeschool Arcade home page
+index.html                 Homeschool Arcade home page (with the About pop-up)
+img/arcade-icon.svg        the arcade icon shown in the browser tab
+shared/
+  arcade-config.js         the ONE leaderboard address used by every game
+  leaderboard.js           leaderboard helper any game can use (falls back to the device)
 shred-the-globe/
   index.html               the game
   css/style.css            look & feel
@@ -90,6 +95,7 @@ rocket-builder/
   js/play.js               walking, hopping, lasers, aliens, crates, HUD, map
   js/ui.js                 math panel, item cards, pause menu
   js/scenes.js             title, level picker, planet intro, blast-off, ending
+  js/scores.js             Top 10 screen and initials (uses the shared leaderboard)
   js/main.js               saving progress and the main loop
 tools/
   source/*.json            the hand-checked country & state facts (edit these)
@@ -100,7 +106,7 @@ tools/
 LEADERBOARD-SETUP.md       how to turn on the shared leaderboard
 ```
 
-The leaderboard address lives in `shred-the-globe/js/config.js`.
+The leaderboard address lives in `shared/arcade-config.js`, one place for every game.
 
 ## Updating later (optional)
 

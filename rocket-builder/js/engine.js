@@ -44,18 +44,26 @@ window.RB = window.RB || {};
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const view = document.createElement('canvas');
-  const D = RB.D = { W: 384, H: 216, S: 1, canvas, view, ctx: view.getContext('2d') };
+  const D = RB.D = { W: 384, H: 216, S: 1, safeB: 0, canvas, view, ctx: view.getContext('2d') };
+  const safeProbe = document.getElementById('safe-probe');
   D.resize = function () {
     const dpr = window.devicePixelRatio || 1;
+    // innerHeight is the part of the screen you can actually see (phone browser bars and system buttons left out)
     const cw = window.innerWidth, ch = window.innerHeight;
     const pw = Math.max(1, Math.round(cw * dpr)), ph = Math.max(1, Math.round(ch * dpr));
     canvas.width = pw; canvas.height = ph;
+    canvas.style.width = cw + 'px'; canvas.style.height = ch + 'px';
     let s = ph > pw ? Math.floor(Math.min(pw / 256, ph / 400)) : Math.floor(Math.min(pw / 384, ph / 216));
     s = Math.max(1, s, Math.ceil(pw / 720), Math.ceil(ph / 480));
     D.S = s; D.W = Math.ceil(pw / s); D.H = Math.ceil(ph / s);
     view.width = D.W; view.height = D.H;
     D.ctx.imageSmoothingEnabled = false;
+    // Space the phone needs at the bottom (gesture bar / buttons), in game pixels.
+    const inset = safeProbe ? safeProbe.getBoundingClientRect().height : 0;
+    D.safeB = Math.ceil((inset * dpr) / s);
   };
+  // Bottom edge that on-screen buttons should stay above (keeps them clear of Android's buttons and swipe bar).
+  D.bottom = () => D.H - D.safeB;
   D.present = function () {
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(view, 0, 0, D.W, D.H, 0, 0, D.W * D.S, D.H * D.S);
@@ -65,6 +73,8 @@ window.RB = window.RB || {};
     return { x: ((clientX - r.left) * (canvas.width / r.width)) / D.S, y: ((clientY - r.top) * (canvas.height / r.height)) / D.S };
   };
   window.addEventListener('resize', D.resize);
+  window.addEventListener('orientationchange', () => setTimeout(D.resize, 250));
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', D.resize);
   D.resize();
 
   // ---------------- pixel font (5x7) ----------------

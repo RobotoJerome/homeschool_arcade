@@ -1,13 +1,40 @@
-# Shared leaderboard setup (one time, about 5 minutes)
+# Shared leaderboard setup
 
-GitHub Pages hosts the game, but it can't store anything on its own. To give every player the same high-score boards, Shred the Globe saves scores to a **Google Sheet that you own**. It's free and uses no extra accounts, and you can see, fix or delete any score right in the spreadsheet.
+GitHub Pages hosts the games, but it can't store anything on its own. To give every player the same high-score boards, **every game in Homeschool Arcade saves its scores to one Google Sheet that you own**. It's free and uses no extra accounts, and you can see, fix or delete any score right in the spreadsheet. Each game gets its own boards in the same **Scores** tab. The first column ("Board") says which game a row belongs to: Rocket Builder rows start with `rocket-builder:`.
 
-Until you finish these steps, the game still works, but each device keeps its own scores.
+The web address of that sheet's script lives in one place for all games: `shared/arcade-config.js`.
+
+Until the leaderboard is set up (or whenever the internet is down), the games still work, but each device keeps its own scores.
+
+## Update your existing leaderboard for all games (about 3 minutes)
+
+Your leaderboard was first set up for Shred the Globe. The script needs this update before Rocket Builder (and future games) can save to the same sheet. The web address stays the same, and Shred the Globe's existing scores are kept.
+
+1. Open your leaderboard spreadsheet and click **Extensions → Apps Script**.
+2. Select all the code in the editor (Ctrl + A) and delete it.
+3. Open this file, select all of it, copy it, and paste it into the editor:
+   https://raw.githubusercontent.com/RobotoJerome/homeschool_arcade/main/tools/leaderboard/Code.gs
+   The second line of the right version reads **"Homeschool Arcade — one shared online leaderboard for EVERY game"**. If it says "Shred the Globe — shared online leaderboard", that's the old version: wait a minute and reload the page.
+4. Click the **Save** 💾 icon.
+5. Click **Deploy → Manage deployments**, click the pencil ✏️ icon, set **Version** to **New version**, and click **Deploy**. (If Google asks you to approve access again, use the same Advanced → Go to … (unsafe) → Allow steps as in part 3 below.)
+6. Check it: open your web app address with `?action=ping` added to the end. It should say `{"ok":true,"version":3,"games":["shred-the-globe","rocket-builder"]}`.
+
+Until you do this, Rocket Builder keeps its scores on each device, and Shred the Globe keeps working as before.
+
+**Optional: rename things to match.** You can rename the spreadsheet (for example **Homeschool Arcade Leaderboard**) and the Apps Script project (click its name at the top of the code editor). Neither changes the web address or breaks anything. Just don't rename the **Scores** tab, and don't add, remove or reorder its columns.
+
+## Adding a future game
+
+Each new game gets an entry in the `GAMES` list near the top of `tools/leaderboard/Code.gs`: its board names, and what a believable score looks like. After that change is pushed, repeat steps 1–6 above. Claude does the code part. You only re-paste the script and publish a new version.
+
+---
+
+# First-time setup (one time, about 5 minutes)
 
 ## 1. Make the spreadsheet
 
 1. Sign in to Google, then go to **https://sheets.new** to open a new blank spreadsheet.
-2. Click "Untitled spreadsheet" and rename it **Shred the Globe Leaderboard**.
+2. Click "Untitled spreadsheet" and rename it **Homeschool Arcade Leaderboard**.
 
 ## 2. Add the leaderboard script
 
@@ -36,9 +63,9 @@ Until you finish these steps, the game still works, but each device keeps its ow
 
 ## 5. Connect the game
 
-Send that URL to Claude, which will add it to `shred-the-globe/js/config.js` and push the update.
+Send that URL to Claude, which will add it to `shared/arcade-config.js` (used by every game) and push the update.
 
-To do it yourself instead, edit `shred-the-globe/js/config.js` on GitHub and paste the URL between the quotes on the `leaderboardUrl:` line.
+To do it yourself instead, edit `shared/arcade-config.js` on GitHub and paste the URL between the quotes on the `leaderboardUrl:` line.
 
 ---
 
@@ -52,7 +79,7 @@ To do it yourself instead, edit `shred-the-globe/js/config.js` on GitHub and pas
 
 - **One spreadsheet only.** The script's `@OnlyCurrentDoc` line means Google lets it use only this leaderboard spreadsheet, never your other Sheets, Drive files or email.
 - **Two actions only.** Visitors can read the Top 10 lists and submit a score. They can't see the spreadsheet itself, pick a different sheet, or run their own code.
-- **Checked scores.** Initials must be 1–3 letters (blocked words are rejected by the server too), and scores must make sense: no more than 15 points, and no impossibly fast times.
+- **Checked scores.** Initials must be 1–3 letters (blocked words are rejected by the server too), and each game has its own "does this score make sense?" check: for example, at most 15 points in Shred the Globe, and no impossibly fast times in any game.
 - **Spam limits.** At most 30 scores can be saved per minute. Each board keeps only its best 50 scores, so the sheet can't grow forever.
 
 A determined tech-savvy player could still fake a score, as on any website without user logins. If that happens, just delete the row.
@@ -61,22 +88,9 @@ A determined tech-savvy player could still fake a score, as on any website witho
 
 - **Don't share edit access** to the leaderboard spreadsheet. Anyone who can edit it can also edit the script, which runs under your account. Leave its sharing set to **Restricted**.
 - Use **2-Step Verification** on your Google account.
-- **To shut the leaderboard off instantly:** in Apps Script, click **Deploy → Manage deployments → Archive**. The game then quietly falls back to keeping scores on each device.
+- **To shut the leaderboard off instantly:** in Apps Script, click **Deploy → Manage deployments → Archive**. The games then quietly fall back to keeping scores on each device.
+- **Permissions:** Google should only list *"View and manage spreadsheets that this application has been installed in."* To review it, go to **https://myaccount.google.com/connections** and find your leaderboard project. It's listed under its Apps Script project name, such as "Homeschool Arcade Leaderboard" or the older "Shred the Globe Leaderboard".
 
-## Updating the script (including the Nov 2026 security update)
+## Updating the script later
 
-If you set up the leaderboard before the security update, do this once. It locks the script to the leaderboard spreadsheet only.
-
-1. Open the leaderboard spreadsheet and click **Extensions → Apps Script**.
-2. If the project is still called "Untitled project", click that name and rename it **Shred the Globe Leaderboard**. That makes the next step easier.
-3. Select all the code in the editor and delete it. Then paste in the latest version from
-   https://raw.githubusercontent.com/RobotoJerome/homeschool_arcade/main/tools/leaderboard/Code.gs
-   and click **Save** 💾.
-4. Remove the old, broader permission:
-   1. Go to **https://myaccount.google.com/connections**.
-   2. Find **Shred the Globe Leaderboard** (or "Untitled project").
-   3. Click it, then **Delete all connections** (or **Remove access**).
-5. Back in Apps Script, choose **setup** in the toolbar and click **▶ Run**. Approve it again (Advanced → Go to … (unsafe) → Allow). This time Google should only ask to *"View and manage spreadsheets that this application has been installed in."*
-6. Click **Deploy → Manage deployments**, click the pencil ✏️ icon, set **Version** to **New version**, and click **Deploy**.
-
-The URL stays the same, so the game keeps working. Use these same steps 1, 3 and 6 for any future script changes.
+Whenever the script changes (for example, when a new game is added), follow steps 1–6 in "Update your existing leaderboard for all games" at the top of this guide. The web address never changes, so the games keep working.

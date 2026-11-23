@@ -20,6 +20,16 @@ html, body {
   outline: none;
   touch-action: none; /* no pinch-zoom or double-tap zoom on the game */
 }
+/* Measures how much room the phone needs at the bottom for its own buttons / swipe bar. */
+#safe-probe {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: env(safe-area-inset-bottom, 0px);
+  visibility: hidden;
+  pointer-events: none;
+}
 .noscript {
   color: #fff;
   font: 20px system-ui, sans-serif;

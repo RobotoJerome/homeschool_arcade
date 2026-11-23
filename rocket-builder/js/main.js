@@ -12,7 +12,8 @@
   // ---------------- progress ----------------
   const freshWorld = () => ({ opened: [], powers: [], gems: [], aliens: [], boss: false, broken: [] });
   RB.newGame = function (level) {
-    RB.G = { v: 1, level, world: 0, ab: RB.newAbilities(), stats: { solved: 0, wrong: 0, zapped: 0, gems: 0 }, ws: freshWorld() };
+    RB.G = { v: 1, level, world: 0, ab: RB.newAbilities(), stats: { solved: 0, wrong: 0, zapped: 0, gems: 0, timeMs: 0 }, ws: freshWorld() };
+    RB.store.set('lastLevel', level);
     RB.saveGame();
   };
   RB.saveGame = function () { if (RB.G) RB.store.set('save', RB.G); };
@@ -21,6 +22,8 @@
     if (!s || s.v !== 1 || typeof s.world !== 'number' || s.world < 0 || s.world > 3 || !s.ab || !s.ws || !s.stats) return null;
     s.ws = Object.assign(freshWorld(), s.ws);
     s.ab = Object.assign(RB.newAbilities(), s.ab);
+    // Games saved before play time was tracked: assume about 10 minutes per finished planet.
+    if (typeof s.stats.timeMs !== 'number') s.stats.timeMs = s.world * 10 * 60000;
     return s;
   };
   // every rocket part found so far (all earlier planets + this one)

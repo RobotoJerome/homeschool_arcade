@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- Homeschool Arcade: a little pixel arcade cabinet -->
+  <!-- outline -->
+  <rect x="6" y="1" width="20" height="30" fill="#0c0c0d"/>
+  <!-- cabinet body -->
+  <rect x="7" y="2" width="18" height="28" fill="#ff3b2f"/>
+  <rect x="7" y="2" width="2" height="28" fill="#ff6a5f"/>
+  <rect x="23" y="2" width="2" height="28" fill="#c2261c"/>
+  <!-- marquee -->
+  <rect x="8" y="3" width="16" height="5" fill="#ffd23f"/>
+  <rect x="10" y="5" width="2" height="1" fill="#0c0c0d"/><rect x="13" y="5" width="2" height="1" fill="#0c0c0d"/>
+  <rect x="17" y="5" width="2" height="1" fill="#0c0c0d"/><rect x="20" y="5" width="2" height="1" fill="#0c0c0d"/>
+  <!-- screen -->
+  <rect x="8" y="9" width="16" height="10" fill="#0c0c0d"/>
+  <rect x="9" y="10" width="14" height="8" fill="#1b1840"/>
+  <!-- one-eyed blob alien (from Rocket Builder) on the screen -->
+  <rect x="14" y="11" width="4" height="1" fill="#7bd34a"/>
+  <rect x="13" y="12" width="6" height="4" fill="#7bd34a"/>
+  <rect x="15" y="12" width="2" height="2" fill="#ffffff"/>
+  <rect x="16" y="13" width="1" height="1" fill="#0c0c0d"/>
+  <rect x="14" y="15" width="4" height="1" fill="#4f9a2e"/>
+  <rect x="12" y="16" width="8" height="1" fill="#4f9a2e"/>
+  <rect x="10" y="16" width="1" height="1" fill="#ffffff"/><rect x="21" y="11" width="1" height="1" fill="#ffffff"/>
+  <!-- control deck with joystick and buttons -->
+  <rect x="6" y="20" width="20" height="4" fill="#0c0c0d"/>
+  <rect x="7" y="21" width="18" height="2" fill="#f3eee3"/>
+  <rect x="10" y="18" width="3" height="2" fill="#0c0c0d"/>
+  <rect x="11" y="19" width="1" height="2" fill="#0c0c0d"/>
+  <rect x="10" y="18" width="2" height="1" fill="#ff6a5f"/>
+  <rect x="16" y="21" width="2" height="1" fill="#ffd23f"/>
+  <rect x="19" y="21" width="2" height="1" fill="#3fa9f5"/>
+  <!-- coin slot -->
+  <rect x="15" y="25" width="2" height="3" fill="#0c0c0d"/>
+  <rect x="15" y="25" width="2" height="1" fill="#ffd23f"/>
+</svg>

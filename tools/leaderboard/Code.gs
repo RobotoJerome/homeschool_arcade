@@ -1,12 +1,16 @@
 /**
- * Shred the Globe — shared online leaderboard
- * ============================================
- * This small Google Apps Script turns a Google Sheet into the game's high-score
- * server, so everyone who plays sees the same Top 10 boards. It's free and runs in
- * your own Google account. Every score becomes a row in the "Scores" tab, and you can
- * delete a row at any time to remove that score.
+ * Homeschool Arcade — one shared online leaderboard for EVERY game
+ * ================================================================
+ * This small Google Apps Script turns one Google Sheet into the high-score server for
+ * all the games on the site, so everyone who plays sees the same Top 10 boards. It's
+ * free and runs in your own Google account. Every score becomes a row in the "Scores"
+ * tab, and you can delete a row at any time to remove that score.
  *
- * Setup: see LEADERBOARD-SETUP.md (about 5 minutes, one time).
+ * Setup or update: see LEADERBOARD-SETUP.md.
+ *
+ * Adding a new game later: add an entry to GAMES below (its board names and what a
+ * believable score looks like), click Save, then Deploy > Manage deployments >
+ * pencil icon > Version: New version > Deploy. The web address stays the same.
  *
  * Security notes:
  *  - The @OnlyCurrentDoc line below tells Google this script may ONLY use the one
@@ -17,18 +21,38 @@
 
 /** @OnlyCurrentDoc */
 
-const SCRIPT_VERSION = 2;
-const SHEET_NAME = 'Scores';
+const SCRIPT_VERSION = 3;
+const SHEET_NAME = 'Scores';      // the tab that holds the scores: renaming the spreadsheet is fine, but keep this tab's name
 const TOP_N = 10;
-const KEEP_PER_BOARD = 50;        // older/lower scores beyond the best 50 per board are removed automatically
-const MAX_ROUNDS = 15;
+const KEEP_PER_BOARD = 50;        // lower scores beyond the best 50 per board are removed automatically
 const CACHE_SECONDS = 60;
 const MAX_SAVES_PER_MINUTE = 30; // simple protection against spam
+const MINUTE = 60 * 1000, HOUR = 60 * MINUTE;
 
-const BOARDS = [
-  'standard:spot:world', 'standard:spot:usa', 'standard:flag:world', 'standard:flag:usa',
-  'skate:spot:world', 'skate:spot:usa', 'skate:flag:world', 'skate:flag:usa'
-];
+/*
+ * Every game on the site, its leaderboards, and what a believable score looks like.
+ * Higher points rank first; a faster time breaks ties.
+ *   points = the score, outOf = the most points possible (0 if a game has no maximum),
+ *   timeMs = how long it took, in milliseconds.
+ */
+const GAMES = {
+  // Shred the Globe (geography): 15 rounds, 1 point each. Its 8 boards keep their original names.
+  'shred-the-globe': {
+    boards: ['standard:spot:world', 'standard:spot:usa', 'standard:flag:world', 'standard:flag:usa',
+      'skate:spot:world', 'skate:spot:usa', 'skate:flag:world', 'skate:flag:usa'],
+    check: function (points, outOf, timeMs) {
+      return outOf >= 1 && outOf <= 15 && points >= 1 && points <= outOf && timeMs >= points * 400 && timeMs <= 6 * HOUR;
+    }
+  },
+  // Rocket Builder (elementary math): stars collected across all 4 planets, one board per level.
+  'rocket-builder': {
+    boards: ['rocket-builder:cadet', 'rocket-builder:pilot', 'rocket-builder:captain'],
+    check: function (points, outOf, timeMs) {
+      return outOf === 0 && points >= 1 && points <= 3000 && timeMs >= 3 * MINUTE && timeMs <= 72 * HOUR;
+    }
+  }
+};
+
 const BLOCKED = ('ASS ARS AZZ FUK FUC FCK FUQ FKU FKN FUX SHT SHI DIK DIC DCK DIX COK CUM KUM CNT KNT ' +
   'KKK NIG NGR NGA NGG FAG FGT TIT TTS WTF STF SEX SXY XXX JIZ JIS HOE VAG PIS PSS CRP DMN SUK SUC SCK NAZ').split(' ');
 const HEADERS = ['Board', 'Initials', 'Points', 'Out of', 'Time', 'Time (ms)', 'Date', 'Saved at', 'ID'];
@@ -39,13 +63,13 @@ function setup() {
   Logger.log('Ready! Now click Deploy > New deployment (see LEADERBOARD-SETUP.md).');
 }
 
-/** GET ?action=top&board=standard:spot:world  ->  { ok, board, entries: [...] } */
+/** GET ?action=top&board=rocket-builder:cadet  ->  { ok, board, entries: [...] } */
 function doGet(e) {
   const p = (e && e.parameter) || {};
   try {
-    if (p.action === 'ping') return json_({ ok: true, version: SCRIPT_VERSION });
+    if (p.action === 'ping') return json_({ ok: true, version: SCRIPT_VERSION, games: Object.keys(GAMES) });
     if (p.action === 'top') {
-      checkBoard_(p.board);
+      gameFor_(p.board);
       return json_({ ok: true, board: p.board, entries: topFor_(p.board) });
     }
     return json_({ ok: false, error: 'Unknown request.' });
@@ -62,14 +86,12 @@ function doPost(e) {
     if (!body || body.action !== 'add') return json_({ ok: false, error: 'Unknown request.' });
 
     const board = String(body.board || '');
-    checkBoard_(board);
+    const game = gameFor_(board);
     const initials = String(body.initials || '').trim().toUpperCase();
     if (!/^[A-Z]{1,3}$/.test(initials)) throw new Error('Initials must be 1 to 3 letters.');
-    if (BLOCKED.indexOf(initials) !== -1) throw new Error('Not on this board, dude — pick other initials.');
-    const outOf = toInt_(body.outOf), points = toInt_(body.points), timeMs = toInt_(body.timeMs);
-    if (!(outOf >= 1 && outOf <= MAX_ROUNDS)) throw new Error('That score doesn\'t look right.');
-    if (!(points >= 1 && points <= outOf)) throw new Error('That score doesn\'t look right.');
-    if (!(timeMs >= points * 400 && timeMs <= 6 * 60 * 60 * 1000)) throw new Error('That time doesn\'t look right.');
+    if (BLOCKED.indexOf(initials) !== -1) throw new Error('Please pick different initials.');
+    const outOf = toInt_(body.outOf || 0), points = toInt_(body.points), timeMs = toInt_(body.timeMs);
+    if (!game.check(points, outOf, timeMs)) throw new Error('That score doesn\'t look right.');
 
     const lock = LockService.getScriptLock();
     lock.waitLock(15000);
@@ -110,9 +132,9 @@ function topFor_(board) {
   const entries = [];
   rows.forEach(function (r) {
     if (String(r[0]) !== board) return;
-    const s = toInt_(r[2]), n = toInt_(r[3]), t = toInt_(r[5]);
+    const s = toInt_(r[2]), n = toInt_(r[3] || 0), t = toInt_(r[5]);
     const savedAt = r[7] instanceof Date ? r[7].getTime() : 0;
-    if (!(s >= 1 && n >= 1 && t > 0)) return; // skip rows that were edited into something invalid
+    if (!(s >= 1 && n >= 0 && t > 0)) return; // skip rows that were edited into something invalid
     entries.push({ i: String(r[1]).toUpperCase().slice(0, 3), s: s, n: n, t: t, d: String(r[6] instanceof Date ? Utilities.formatDate(r[6], Session.getScriptTimeZone(), 'MMM d, yyyy') : r[6]), at: savedAt, id: String(r[8]) });
   });
   entries.sort(function (a, b) { return (b.s - a.s) || (a.t - b.t) || (a.at - b.at); });
@@ -151,8 +173,11 @@ function getSheet_() {
   return sheet;
 }
 
-function checkBoard_(board) {
-  if (BOARDS.indexOf(String(board)) === -1) throw new Error('Unknown leaderboard.');
+/** Which game owns this board (throws for unknown boards). */
+function gameFor_(board) {
+  board = String(board);
+  for (const id in GAMES) if (GAMES[id].boards.indexOf(board) !== -1) return GAMES[id];
+  throw new Error('Unknown leaderboard.');
 }
 
 function toInt_(v) {

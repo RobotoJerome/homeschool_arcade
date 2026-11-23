@@ -116,8 +116,8 @@
     return { groups: g, w, h };
   };
 
-  M.drawHint = function (gx, p, x, y, w, h) {
-    let pitch = 10, L = M.hintLayout(p, pitch);
+  M.drawHint = function (gx, p, x, y, w, h, maxPitch) {
+    let pitch = maxPitch || 10, L = M.hintLayout(p, pitch);
     while ((L.w > w || L.h > h) && pitch > 2) { pitch--; L = M.hintLayout(p, pitch); }
     const ds = Math.max(1, pitch - 1);
     let cx = Math.round(x + (w - L.w) / 2);

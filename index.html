@@ -9,7 +9,7 @@
   <title>Homeschool Arcade</title>
   <meta name="description" content="Learning games built for our homeschool.">
   <meta name="theme-color" content="#121214">
-  <link rel="icon" href="shred-the-globe/img/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/arcade-icon.svg" type="image/svg+xml">
   <style>
     @font-face { font-family: "Anton"; src: url(shred-the-globe/fonts/anton-latin-400-normal.woff2) format("woff2"); font-display: swap; }
     @font-face { font-family: "Permanent Marker"; src: url(shred-the-globe/fonts/permanent-marker-latin-400-normal.woff2) format("woff2"); font-display: swap; }
@@ -17,6 +17,7 @@
     :root { --ink: #0c0c0d; --grip: #131315; --paper: #f3eee3; --red: #ff3b2f; --yellow: #ffd23f; --muted: #a8a397; }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
+    body { position: relative; }
     body {
       font-family: "Barlow", system-ui, sans-serif; font-weight: 500; color: var(--paper); background-color: var(--grip);
       background-image: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.06), transparent 60%),
@@ -37,9 +38,29 @@
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 14px; }
     .chip { display: inline-block; font-family: "Anton", Impact, sans-serif; text-transform: uppercase; letter-spacing: .08em; font-size: .85rem; padding: .25em .7em; border-radius: 5px; border: 2px solid #000; }
     .chip--subject { background: var(--ink); color: var(--paper); }
-    .chip--age { background: var(--red); color: #fff; }  </style>
+    .chip--age { background: var(--red); color: #fff; }
+    /* About button + pop-up (works without any scripts, using the browser's built-in "popover") */
+    .about-btn { position: absolute; top: 14px; right: 14px; font-family: "Anton", Impact, sans-serif; text-transform: uppercase; letter-spacing: .08em; font-size: 1rem;
+      color: var(--ink); background: var(--yellow); border: 3px solid #000; border-radius: 8px; box-shadow: 3px 3px 0 #000; padding: .35em .9em; cursor: pointer; }
+    .about-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+    .about-btn:focus-visible, .about__close:focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; }
+    .about { width: min(460px, calc(100% - 32px)); color: var(--ink); background: var(--paper); border: 3px solid #000; border-radius: 14px; box-shadow: 8px 8px 0 #000; padding: 26px 26px 22px; }
+    .about::backdrop { background: rgba(0,0,0,.6); }
+    .about h2 { margin: 0 0 10px; font-family: "Anton", Impact, sans-serif; font-weight: 400; text-transform: uppercase; font-size: 2rem; line-height: 1; }
+    .about p { margin: 0 0 12px; line-height: 1.45; color: #3b3830; }
+    .about .new { font-family: "Permanent Marker", cursive; color: var(--red); font-size: 1.15rem; }
+    .about__close { font-family: "Anton", Impact, sans-serif; text-transform: uppercase; letter-spacing: .08em; font-size: 1rem; color: var(--paper); background: var(--ink);
+      border: 3px solid #000; border-radius: 8px; padding: .35em 1.1em; cursor: pointer; margin-top: 4px; }
+  </style>
 </head>
 <body>
+  <button class="about-btn" type="button" popovertarget="about">About</button>
+  <div class="about" id="about" popover>
+    <h2>About Homeschool Arcade</h2>
+    <p>Every game here is made to be easy to pick up and fun to play. Each one also practices a core school skill, like math facts or geography, so kids build real skills while they play.</p>
+    <p class="new">New games are added all the time, so check back often!</p>
+    <button class="about__close" type="button" popovertarget="about" popovertargetaction="hide">Got it!</button>
+  </div>
   <h1>Homeschool<br>Arcade</h1>
   <span class="tag">Play. Learn. Level Up.</span>
   <main class="games">

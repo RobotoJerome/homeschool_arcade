@@ -70,7 +70,7 @@
 
   // ---------------- the planets ----------------
   RB.WORLD_DEFS = [
-    { name: 'SPROUT', sub: 'ADD IT UP!', op: '+', seed: 101, w: 64, h: 44, alienHp: 2, bossHp: 5,
+    { name: 'SPROUT', sub: 'PLUS MAKES MORE!', ex: { a: 2, b: 3, c: 5, cap: '2 AND 3 MORE MAKES 5' }, say: 'Welcome to Planet Sprout! Here we add. Plus makes more. 2 and 3 more makes 5. Find 4 rocket parts!', op: '+', seed: 101, w: 64, h: 44, alienHp: 2, bossHp: 5,
       build(B) {
         B.noise(',', 0.6, 0, 0, 64, 44, 5, 11);
         B.noise('T', 0.6, 0, 0, 64, 44, 6, 12, '.,');
@@ -97,7 +97,7 @@
         B.gemsAt([[28, 34], [5, 22], [6, 30], [59, 5], [60, 40]]);
         B.randomGems(16);
       } },
-    { name: 'FROST', sub: 'TAKE IT AWAY!', op: '-', seed: 202, w: 64, h: 44, alienHp: 4, bossHp: 8,
+    { name: 'FROST', sub: 'MINUS MAKES LESS!', ex: { a: 5, b: 2, c: 3, cap: '5 TAKE AWAY 2 LEAVES 3' }, say: 'Welcome to Planet Frost! Here we subtract. Minus makes less. 5 take away 2 leaves 3. Find 4 rocket parts!', op: '-', seed: 202, w: 64, h: 44, alienHp: 4, bossHp: 8,
       build(B) {
         B.noise(',', 0.62, 0, 0, 64, 44, 5, 21);
         B.noise('T', 0.6, 0, 0, 64, 44, 6, 22, '.,');
@@ -124,7 +124,7 @@
         B.gemsAt([[31, 5], [35, 11], [52, 18], [7, 6], [60, 41]]);
         B.randomGems(14);
       } },
-    { name: 'EMBER', sub: 'GROUPS OF!', op: '×', seed: 303, w: 64, h: 44, alienHp: 4, bossHp: 10,
+    { name: 'EMBER', sub: 'TIMES MEANS GROUPS!', ex: { a: 3, b: 2, c: 6, cap: '3 GROUPS OF 2 MAKES 6' }, say: 'Welcome to Planet Ember! Here we multiply. Times means groups. 3 groups of 2 makes 6. Find 4 rocket parts!', op: '×', seed: 303, w: 64, h: 44, alienHp: 4, bossHp: 10,
       build(B) {
         B.noise(',', 0.62, 0, 0, 64, 44, 5, 31);
         B.noise('T', 0.7, 0, 0, 64, 44, 5, 32, '.,');
@@ -153,7 +153,7 @@
         B.gemsAt([[52, 32], [6, 27], [11, 27], [32, 21], [60, 12]]);
         B.randomGems(14);
       } },
-    { name: 'FUNGI', sub: 'SHARE IT OUT!', op: '÷', seed: 404, w: 64, h: 44, alienHp: 6, bossHp: 15,
+    { name: 'FUNGI', sub: 'SHARE IT FAIRLY!', ex: { a: 6, b: 2, c: 3, cap: '6 SHARED BY 2 IS 3 EACH' }, say: 'Welcome to Planet Fungi! Here we divide. Divide means share fairly. 6 shared by 2 is 3 each. Find 4 rocket parts!', op: '÷', seed: 404, w: 64, h: 44, alienHp: 6, bossHp: 15,
       build(B) {
         B.noise(',', 0.6, 0, 0, 64, 44, 5, 41);
         B.noise('T', 0.6, 0, 0, 64, 44, 6, 42, '.,');

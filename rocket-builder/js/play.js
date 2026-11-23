@@ -462,6 +462,8 @@
 
   // ---------------- HUD ----------------
   P.hud = {};
+  // Height of the touch joystick and zap button: lifted off the bottom edge (more on tall phones).
+  P.controlY = () => D.bottom() - Math.max(18, Math.round(D.H * 0.12)) - 22;
   function drawHUD(g) {
     const ab = RB.G.ab, pl = P.pl;
     RB.box(g, 3, 3, Math.max(ab.maxHearts * 10 + 6, 50), 31, 'rgba(29,27,51,0.72)', 'rgba(0,0,0,0.5)');
@@ -494,13 +496,16 @@
     if (!I.touch) F.draw(g, 'M', P.hud.map.x + 10, 25, { c: '#ffffff', a: 'center', o: '#1d1b33' });
     // touch controls
     if (I.touch) {
-      const st = P.stick, bx = st ? st.sx : 40, by = st ? st.sy : D.H - 40;
-      g.globalAlpha = st ? 0.55 : 0.3; RB.circle(g, bx, by, 20, '#1d1b33'); RB.ring(g, bx, by, 20, '#ffffff');
-      const kx = st ? bx + U.clamp(st.x - st.sx, -18, 18) : bx, ky = st ? by + U.clamp(st.y - st.sy, -18, 18) : by;
-      RB.circle(g, kx, ky, 8, '#ffffff');
-      const fx = D.W - 36, fy = D.H - 36;
-      g.globalAlpha = 0.6; RB.circle(g, fx, fy, 18, '#ff4d5e'); RB.ring(g, fx, fy, 18, '#ffffff'); g.globalAlpha = 1;
+      // Raised well above the bottom edge so Android's back/home buttons and swipe bar never cover them.
+      const lineY = P.controlY();
+      const st = P.stick, bx = st ? st.sx : 46, by = st ? st.sy : lineY;
+      g.globalAlpha = st ? 0.55 : 0.35; RB.circle(g, bx, by, 22, '#1d1b33'); RB.ring(g, bx, by, 22, '#ffffff');
+      const kx = st ? bx + U.clamp(st.x - st.sx, -20, 20) : bx, ky = st ? by + U.clamp(st.y - st.sy, -20, 20) : by;
+      RB.circle(g, kx, ky, 9, '#ffffff');
+      const fx = D.W - 46, fy = lineY;
+      g.globalAlpha = 0.65; RB.circle(g, fx, fy, 22, '#ff4d5e'); RB.ring(g, fx, fy, 22, '#ffffff'); g.globalAlpha = 1;
       g.drawImage(SPR.icon['laser' + RB.G.ab.laser], fx - 6, fy - 6);
+      F.draw(g, 'ZAP', fx, fy + 10, { c: '#ffffff', a: 'center', o: '#1d1b33' });
     }
   }
   function drawMiniRocket(g, x, y) {

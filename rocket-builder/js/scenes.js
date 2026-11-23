@@ -36,11 +36,14 @@
       this.lv = UI.menu(M.LEVELS.map((L, i) => ({ label: L.name, act: () => { RB.newGame(i); RB.go('intro'); } })), { cols: 3 });
       this.back = { r: null };
       this.arcade = { r: null };
+      this.top10 = { r: null };
     },
     update(dt) {
       this.t += dt;
+      if (this.mode === 'main' && I.pressed.KeyT) { A.play('click'); RB.go('boards'); return; }
       for (const e of I.taps()) {
         if (U.inRect(e.x, e.y, this.arcade.r)) { A.play('click'); window.location.href = '../index.html'; return; }
+        if (this.mode === 'main' && U.inRect(e.x, e.y, this.top10.r)) { A.play('click'); RB.go('boards'); return; }
         if (this.mode === 'level' && U.inRect(e.x, e.y, this.back.r)) { A.play('click'); this.mode = 'main'; return; }
       }
       if (this.mode === 'main') this.main.update();
@@ -55,6 +58,9 @@
       // arcade link
       this.arcade.r = { x: 4, y: 4, w: 62, h: 16 };
       RB.box(g, 4, 4, 62, 16, 'rgba(29,27,51,0.85)', '#000'); F.draw(g, '< ARCADE', 35, 9, { c: '#ffffff', a: 'center' });
+      // high scores
+      this.top10.r = { x: D.W - 66, y: 4, w: 62, h: 16 };
+      RB.box(g, D.W - 66, 4, 62, 16, 'rgba(29,27,51,0.85)', '#000'); F.draw(g, '★ TOP 10', D.W - 35, 9, { c: '#ffd23f', a: 'center' });
       const s1 = D.W > 330 ? 5 : 4, s2 = s1 - 1;
       const ty = Math.round(D.H * 0.12);
       F.draw(g, 'ROCKET', D.W / 2, ty + Math.round(Math.sin(t * 2) * 2), { s: s1, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
@@ -97,36 +103,45 @@
       const wi = RB.G.world, def = RB.WORLD_DEFS[wi];
       this.t = 0; A.playMusic('w' + wi);
       this.menu = UI.menu([{ label: 'GO!', act: () => RB.go('play') }]);
-      UI.talk(`Planet ${def.name.toLowerCase()}. ${def.sub.toLowerCase()} Find 4 rocket parts!`);
+      UI.talk(def.say);
     },
     update(dt) { this.t += dt; if (this.t > 0.4) this.menu.update(); },
     draw(g) {
-      const t = this.t, wi = RB.G.world, def = RB.WORLD_DEFS[wi], T = RB.THEMES[wi];
+      const t = this.t, wi = RB.G.world, def = RB.WORLD_DEFS[wi], T = RB.THEMES[wi], ex = def.ex;
       drawStars(g, t, 0.3);
-      const narrow = D.W < 330, pr = narrow ? 34 : 48;
-      const px = narrow ? D.W / 2 : D.W * 0.28, py = narrow ? 70 : D.H * 0.46;
-      g.drawImage(RB.planet(wi, pr), Math.round(px - pr), Math.round(py - pr));
-      // big math sign on the planet
-      RB.circle(g, px, py, 16, INK); RB.circle(g, px, py, 14, '#ffffff');
-      F.draw(g, def.op, px + 1, py - 10, { s: 3, c: T.hazard[1], a: 'center' });
-      const cx = narrow ? D.W / 2 : D.W * 0.66, top = narrow ? 120 : D.H * 0.16;
-      F.draw(g, 'PLANET ' + (wi + 1), cx, top, { s: 1, c: '#9ff3ff', a: 'center' });
-      F.draw(g, def.name, cx, top + 12, { s: narrow ? 3 : 4, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
-      F.draw(g, def.sub, cx, top + (narrow ? 38 : 46), { s: 2, c: '#ffffff', a: 'center', o: INK });
-      // find 4 parts
-      const sy = top + (narrow ? 58 : 70);
-      F.draw(g, 'FIND', cx - 44, sy + 4, { c: '#ffffff', a: 'center' });
-      for (let i = 0; i < 4; i++) { g.drawImage(SPR.crate[wi], Math.round(cx - 28 + i * 18), sy); }
-      // controls reminder
-      const ky = sy + 26;
+      const narrow = D.W < 330, fit = (txt, s, w) => (F.width(txt, s) <= w ? s : s - 1);
+      // ---- title: planet number, name, and the big idea for this planet ----
+      F.draw(g, 'PLANET ' + (wi + 1) + ' OF 4', D.W / 2, 8, { c: '#9ff3ff', a: 'center' });
+      F.draw(g, def.name, D.W / 2, 19, { s: narrow ? 3 : 4, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
+      const hs = fit(def.sub, 2, D.W - 12), hy = narrow ? 44 : 52;
+      F.draw(g, def.sub, D.W / 2, hy, { s: hs, c: '#ffffff', a: 'center', o: INK });
+      // ---- planet (left) and a picture of an example problem (right) ----
+      const top = hy + 7 * hs + 10;
+      const lx = narrow ? D.W / 2 : Math.round(D.W * 0.27), rx = narrow ? D.W / 2 : Math.round(D.W * 0.68);
+      const pr = narrow ? 28 : Math.max(22, Math.min(36, Math.floor((D.bottom() - top - 76) / 2)));
+      const py = top + pr;
+      g.drawImage(RB.planet(wi, pr), Math.round(lx - pr), Math.round(py - pr));
+      RB.circle(g, lx, py, 13, INK); RB.circle(g, lx, py, 11, '#ffffff');
+      F.draw(g, def.op, lx + 1, py - 7, { s: 2, c: T.hazard[1], a: 'center' });
+      const ey = narrow ? py + pr + 8 : top, bw = narrow ? D.W - 24 : Math.round(D.W * 0.44);
+      RB.box(g, rx - bw / 2, ey, bw, 84, 'rgba(29,27,51,0.85)', '#4a4766');
+      M.drawHint(g, { op: def.op, a: ex.a, b: ex.b, c: ex.c, missing: null }, rx - bw / 2 + 6, ey + 5, bw - 12, 42, 15);
+      F.draw(g, `${ex.a} ${def.op} ${ex.b} = ${ex.c}`, rx, ey + 52, { s: 2, c: '#5dff9e', a: 'center', o: INK });
+      F.draw(g, ex.cap, rx, ey + 71, { c: '#c9cfff', a: 'center' });
+      // ---- find 4 parts + controls ----
+      const sy = narrow ? ey + 94 : Math.max(py + pr + 10, ey + 94);
+      const fx = narrow ? D.W / 2 : lx;
+      F.draw(g, 'FIND', fx - 44, sy + 5, { c: '#ffffff', a: 'center' });
+      for (let i = 0; i < 4; i++) g.drawImage(SPR.crate[wi], Math.round(fx - 30 + i * 18), sy);
+      const kx = narrow ? D.W / 2 : rx, ky = narrow ? sy + 24 : sy;
       if (I.touch) {
-        RB.circle(g, cx - 40, ky + 8, 8, '#4a4766'); RB.circle(g, cx - 40, ky + 8, 3, '#ffffff'); F.draw(g, 'MOVE', cx - 28, ky + 5, { c: '#ffffff' });
-        RB.circle(g, cx + 20, ky + 8, 8, '#ff4d5e'); g.drawImage(SPR.icon['laser' + RB.G.ab.laser], cx + 14, ky + 2); F.draw(g, 'ZAP', cx + 32, ky + 5, { c: '#ffffff' });
+        RB.circle(g, kx - 40, ky + 8, 8, '#4a4766'); RB.circle(g, kx - 40, ky + 8, 3, '#ffffff'); F.draw(g, 'MOVE', kx - 28, ky + 5, { c: '#ffffff' });
+        RB.circle(g, kx + 20, ky + 8, 8, '#ff4d5e'); g.drawImage(SPR.icon['laser' + RB.G.ab.laser], kx + 14, ky + 2); F.draw(g, 'ZAP', kx + 32, ky + 5, { c: '#ffffff' });
       } else {
-        keyCap(g, cx - 66, ky, '<'); keyCap(g, cx - 54, ky, '>'); F.draw(g, 'MOVE', cx - 39, ky + 4, { c: '#ffffff' });
-        RB.box(g, cx + 2, ky, 34, 15, '#ffffff', INK); F.draw(g, 'SPACE', cx + 19, ky + 4, { c: INK, a: 'center' }); F.draw(g, 'ZAP', cx + 41, ky + 4, { c: '#ffffff' });
+        keyCap(g, kx - 66, ky, '<'); keyCap(g, kx - 54, ky, '>'); F.draw(g, 'MOVE', kx - 39, ky + 4, { c: '#ffffff' });
+        RB.box(g, kx + 2, ky, 34, 15, '#ffffff', INK); F.draw(g, 'SPACE', kx + 19, ky + 4, { c: INK, a: 'center' }); F.draw(g, 'ZAP', kx + 41, ky + 4, { c: '#ffffff' });
       }
-      const it = this.menu.items[0]; it.r = { x: Math.round(cx - 45), y: Math.min(D.H - 36, ky + 24), w: 90, h: 28 };
+      const it = this.menu.items[0]; it.r = { x: Math.round(D.W / 2 - 45), y: Math.min(ky + 30, D.bottom() - 32), w: 90, h: 28 };
       bigButton(g, it, true, 3);
     },
   };
@@ -135,7 +150,11 @@
   // ---------------- play ----------------
   S.play = {
     enter() { RB.Play.load(RB.G.world); A.playMusic('w' + RB.G.world); RB.saveGame(); },
-    update(dt) { RB.Play.update(dt); },
+    update(dt) {
+      // play time for the leaderboard (the clock stops while the pause menu is open)
+      if (!(RB.Play.modal && RB.Play.modal.isPause)) RB.G.stats.timeMs = (RB.G.stats.timeMs || 0) + dt * 1000;
+      RB.Play.update(dt);
+    },
     draw(g) { RB.Play.draw(g); },
   };
 
@@ -143,7 +162,7 @@
   S.launch = {
     enter() {
       this.t = 0; this.from = RB.G.world; this.to = this.from + 1; this.counted = 0;
-      this.ry = D.H / 2; this.vy = 0; this.objs = []; this.spawn = 0; this.got = 0; this.wob = 0; this.done = false;
+      this.ry = D.H / 2; this.vy = 0; this.objs = []; this.spawn = 0; this.got = 0; this.wob = 0; this.done = false; this.announced = false;
       this.parts = RB.allParts();
       A.playMusic('space'); RB.saveGame();
       UI.talk('3, 2, 1, blast off!');
@@ -208,8 +227,15 @@
       RB.box(g, bx - 2, 6, bw + 4, 10, INK, '#000'); g.fillStyle = '#5dff9e'; g.fillRect(bx, 8, Math.round(bw * prog), 6);
       g.drawImage(RB.planet(this.from, 6), bx - 18, 5); g.drawImage(RB.planet(last ? 0 : this.to, 6), bx + bw + 4, 5);
       F.draw(g, '★ ' + this.got, D.W - 8, D.H - 14, { c: '#ffd23f', a: 'right', o: INK });
-      if (t < 6.5) F.draw(g, I.touch ? 'TOUCH TO STEER  ·  GRAB STARS' : 'UP / DOWN  ·  GRAB STARS', D.W / 2, D.H - 16, { c: '#ffffff', a: 'center', o: INK });
-      if (t > 17.5) F.draw(g, last ? 'HOME!' : 'PLANET ' + (this.to + 1) + '!', D.W / 2, D.H * 0.22, { s: 3, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
+      if (t < 7) {
+        F.draw(g, 'GRAB THE STARS!', D.W / 2, D.bottom() - 30, { s: 2, c: '#ffd23f', a: 'center', o: INK });
+        F.draw(g, I.touch ? 'HOLD YOUR FINGER UP OR DOWN TO STEER' : 'STEER WITH THE UP AND DOWN KEYS', D.W / 2, D.bottom() - 12, { c: '#ffffff', a: 'center', o: INK });
+      }
+      if (t > 17.5) {
+        if (!this.announced) { this.announced = true; UI.talk(last ? 'Home sweet home!' : 'Next stop, Planet ' + RB.WORLD_DEFS[this.to].name.toLowerCase() + '!'); }
+        F.draw(g, last ? 'HOME SWEET HOME!' : 'NEXT STOP:', D.W / 2, D.H * 0.18, { s: last ? 3 : 2, c: last ? '#ffd23f' : '#ffffff', a: 'center', o: INK, sh: last ? '#ff4d5e' : null });
+        if (!last) F.draw(g, 'PLANET ' + RB.WORLD_DEFS[this.to].name + '!', D.W / 2, D.H * 0.18 + 20, { s: 3, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
+      }
     },
   };
   function drawStarsOnly(g, t) {
@@ -217,9 +243,14 @@
   }
 
   // ---------------- the end ----------------
+  // Celebrate, then (if the score makes the Top 10) type initials, then show the leaderboard.
   S.win = {
     enter() {
-      this.t = 0; this.fw = []; A.playMusic('win'); A.play('win');
+      this.t = 0; this.fw = []; this.phase = 'party'; this.newId = null; this.msg = '';
+      A.playMusic('win'); A.play('win');
+      const G = RB.G;
+      this.score = G.stats.gems; this.time = Math.round(G.stats.timeMs || 0); this.level = G.level;
+      this.st = RB.Scores.load(this.level);
       this.menu = UI.menu([{ label: 'PLAY AGAIN', act: () => RB.go('title') }, { label: 'ARCADE', act: () => { window.location.href = '../index.html'; } }], { cols: 2 });
       UI.talk('You did it! You built the super rocket and flew home. Great math, space explorer!');
     },
@@ -232,7 +263,25 @@
       }
       for (const p of this.fw) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 30 * dt; p.life -= dt; }
       this.fw = this.fw.filter((p) => p.life > 0);
-      if (this.t > 1) this.menu.update();
+      if (this.phase === 'party') {
+        const skip = this.t > 1 && (I.hit('ok') || I.taps().length);
+        if ((this.t > 4 || skip) && this.st.state === 'ready') {
+          const LB = window.ArcadeBoards;
+          if (LB && LB.qualifies(this.st.list, this.score, this.time)) {
+            this.phase = 'initials'; A.play('power');
+            UI.talk('New high score! Type your initials.');
+            this.ini = RB.Scores.initials((ini) => this.saveScore(ini), () => { this.phase = 'board'; });
+          } else this.phase = 'board';
+        }
+      } else if (this.phase === 'initials') this.ini.update(dt);
+      else if (this.phase === 'board') this.menu.update();
+    },
+    saveScore(ini) {
+      const LB = window.ArcadeBoards;
+      LB.add(RB.Scores.board(this.level), { i: ini, s: this.score, n: 0, t: this.time }).then((r) => {
+        if (r.error) { this.ini.busy = false; this.ini.err = 'COULD NOT SAVE - TRY AGAIN'; this.msg = r.error; return; }
+        this.st = { state: 'ready', list: r.list, offline: r.offline }; this.newId = r.id; this.phase = 'board'; A.play('part');
+      });
     },
     draw(g) {
       const t = this.t, st = RB.G.stats;
@@ -242,16 +291,33 @@
       g.drawImage(RB.planet(0, 30), D.W - 70, D.H - 70);
       F.draw(g, 'YOU DID IT!', D.W / 2, 12, { s: D.W > 330 ? 4 : 3, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
       RB.drawShip(g, Math.round(D.W * 0.25), Math.round(D.H * 0.62 + Math.sin(t * 2) * 3), RB.allParts(), t, { flame: true }, 2);
-      const x = Math.round(D.W * 0.5), y = 50;
-      const row = (i, icon, n) => { g.drawImage(icon, x, y + i * 22); F.draw(g, String(n), x + 18, y + i * 22 + 2, { s: 2, c: '#ffffff', o: INK }); };
-      row(0, SPR.gem[1], st.gems);
-      g.fillStyle = '#5dff9e'; g.fillRect(x + 1, y + 27, 3, 3); g.fillRect(x + 4, y + 25, 2, 3); g.fillRect(x + 6, y + 22, 2, 4);
-      F.draw(g, String(st.solved), x + 18, y + 24, { s: 2, c: '#ffffff', o: INK }); F.draw(g, 'MATH', x + 18 + F.width(String(st.solved), 2) + 6, y + 28, { c: '#9ff3ff' });
-      g.drawImage(SPR.alien[0].open, x - 2, y + 42);
-      F.draw(g, String(st.zapped), x + 18, y + 46, { s: 2, c: '#ffffff', o: INK }); F.draw(g, 'ZAPPED', x + 18 + F.width(String(st.zapped), 2) + 6, y + 50, { c: '#9ff3ff' });
-      F.draw(g, M.LEVELS[RB.G.level].name + ' ' + '★'.repeat(M.LEVELS[RB.G.level].stars), x, y + 72, { c: '#ffd23f' });
+      if (this.phase === 'party') {
+        const x = Math.round(D.W * 0.5), y = 50;
+        const row = (i, icon, n) => { g.drawImage(icon, x, y + i * 22); F.draw(g, String(n), x + 18, y + i * 22 + 2, { s: 2, c: '#ffffff', o: INK }); };
+        row(0, SPR.gem[1], st.gems); F.draw(g, 'STARS', x + 18 + F.width(String(st.gems), 2) + 6, y + 6, { c: '#9ff3ff' });
+        g.fillStyle = '#5dff9e'; g.fillRect(x + 1, y + 27, 3, 3); g.fillRect(x + 4, y + 25, 2, 3); g.fillRect(x + 6, y + 22, 2, 4);
+        F.draw(g, String(st.solved), x + 18, y + 24, { s: 2, c: '#ffffff', o: INK }); F.draw(g, 'MATH', x + 18 + F.width(String(st.solved), 2) + 6, y + 28, { c: '#9ff3ff' });
+        g.drawImage(SPR.alien[0].open, x - 2, y + 42);
+        F.draw(g, String(st.zapped), x + 18, y + 46, { s: 2, c: '#ffffff', o: INK }); F.draw(g, 'ZAPPED', x + 18 + F.width(String(st.zapped), 2) + 6, y + 50, { c: '#9ff3ff' });
+        F.draw(g, 'TIME ' + RB.Scores.fmt(this.time), x, y + 70, { c: '#c9cfff' });
+        F.draw(g, M.LEVELS[this.level].name + ' ' + '★'.repeat(M.LEVELS[this.level].stars), x, y + 84, { c: '#ffd23f' });
+        return;
+      }
+      if (this.phase === 'initials') {
+        const p = UI.panel(g, 260, 196);
+        F.draw(g, 'NEW HIGH SCORE!', p.x + p.w / 2, p.y + 8, { s: 2, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
+        F.draw(g, '★ ' + this.score + ' STARS  -  ' + RB.Scores.fmt(this.time), p.x + p.w / 2, p.y + 28, { c: '#ffffff', a: 'center' });
+        F.draw(g, 'YOUR INITIALS', p.x + p.w / 2, p.y + 42, { c: '#9ff3ff', a: 'center' });
+        this.ini.draw(g, p.x + p.w / 2, p.y + 54);
+        return;
+      }
+      // the Top 10 for this level
+      const p = UI.panel(g, 300, 226);
+      F.draw(g, 'TOP 10 - ' + M.LEVELS[this.level].name, p.x + p.w / 2, p.y + 7, { s: 2, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
+      RB.Scores.drawTable(g, this.st, p.x + 8, p.y + 26, p.w - 16, this.newId);
+      if (!this.newId) F.draw(g, 'YOU GOT ★' + this.score + ' IN ' + RB.Scores.fmt(this.time), p.x + p.w / 2, p.y + p.h - 44, { c: '#ffffff', a: 'center' });
       const bw = 96;
-      this.menu.items.forEach((it, i) => { it.r = { x: Math.round(D.W / 2 - bw - 5 + i * (bw + 10)), y: D.H - 34, w: bw, h: 26 }; UI.button(g, it, i === this.menu.focus, { fill: i ? '#ffffff' : '#ffd23f', top: '#fff' }); });
+      this.menu.items.forEach((it, i) => { it.r = { x: Math.round(p.x + p.w / 2 - bw - 5 + i * (bw + 10)), y: p.y + p.h - 30, w: bw, h: 24 }; UI.button(g, it, i === this.menu.focus, { fill: i ? '#ffffff' : '#ffd23f', top: '#fff' }); });
     },
   };
 })(window.RB);
