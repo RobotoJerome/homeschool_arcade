@@ -6,20 +6,22 @@ The web address of that sheet's script lives in one place for all games: `shared
 
 Until the leaderboard is set up (or whenever the internet is down), the games still work, but each device keeps its own scores.
 
-## Update your existing leaderboard for all games (about 3 minutes)
+## Updating the script (about 3 minutes)
 
-Your leaderboard was first set up for Shred the Globe. The script needs this update before Rocket Builder (and future games) can save to the same sheet. The web address stays the same, and Shred the Globe's existing scores are kept.
+**Current status:** version 3 (one sheet for all games) has been live since November 22, 2026. The spreadsheet is called **Homeschool Arcade Leaderboard**, and it holds Shred the Globe's and Rocket Builder's scores.
+
+Repeat these steps whenever the script changes, for example when a new game is added. The web address stays the same, and existing scores are kept.
 
 1. Open your leaderboard spreadsheet and click **Extensions → Apps Script**.
 2. Select all the code in the editor (Ctrl + A) and delete it.
 3. Open this file, select all of it, copy it, and paste it into the editor:
    https://raw.githubusercontent.com/RobotoJerome/homeschool_arcade/main/tools/leaderboard/Code.gs
-   The second line of the right version reads **"Homeschool Arcade — one shared online leaderboard for EVERY game"**. If it says "Shred the Globe — shared online leaderboard", that's the old version: wait a minute and reload the page.
+   The second line of the right version reads **"Homeschool Arcade — one shared online leaderboard for EVERY game"**. If you just pushed a change and still see an older copy, your browser saved it for up to 5 minutes: press **Ctrl + F5** to reload it fresh.
 4. Click the **Save** 💾 icon.
 5. Click **Deploy → Manage deployments**, click the pencil ✏️ icon, set **Version** to **New version**, and click **Deploy**. (If Google asks you to approve access again, use the same Advanced → Go to … (unsafe) → Allow steps as in part 3 below.)
-6. Check it: open your web app address with `?action=ping` added to the end. It should say `{"ok":true,"version":3,"games":["shred-the-globe","rocket-builder"]}`.
+6. Check it: open your **script's** web app address (the `script.google.com/…/exec` one, not the website) with `?action=ping` added to the end. It shows the version number and the list of games, for example `{"ok":true,"version":3,"games":["shred-the-globe","rocket-builder"]}`.
 
-Until you do this, Rocket Builder keeps its scores on each device, and Shred the Globe keeps working as before.
+Saving in the editor isn't enough: the games only see the new script after step 5. Until then, a new game keeps its scores on each device.
 
 **Optional: rename things to match.** You can rename the spreadsheet (for example **Homeschool Arcade Leaderboard**) and the Apps Script project (click its name at the top of the code editor). Neither changes the web address or breaks anything. Just don't rename the **Scores** tab, and don't add, remove or reorder its columns.
 
@@ -93,4 +95,4 @@ A determined tech-savvy player could still fake a score, as on any website witho
 
 ## Updating the script later
 
-Whenever the script changes (for example, when a new game is added), follow steps 1–6 in "Update your existing leaderboard for all games" at the top of this guide. The web address never changes, so the games keep working.
+Whenever the script changes (for example, when a new game is added), follow steps 1–6 in "Updating the script" at the top of this guide. The web address never changes, so the games keep working.

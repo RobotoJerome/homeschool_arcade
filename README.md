@@ -1,9 +1,20 @@
 # Homeschool Arcade
 
-Learning games built for our homeschool:
+Learning games built for our homeschool, live at **https://homeschoolarcade.games**.
 
-- **Shred the Globe**: a skate-themed geography game (middle school).
-- **Rocket Builder**: a space math adventure (elementary).
+Every game on the site follows the same plan:
+- **Easy to pick up and fun to play.** Very little reading for the youngest players, plus read-aloud where it helps.
+- **Practices a core school skill** (math, geography, and more as games are added).
+- **Has a leaderboard** on the one shared Homeschool Arcade high-score sheet (see [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md)).
+- **Safe for kids:** no ads, trackers or accounts. Only 3-letter initials are ever saved online.
+- **No build tools:** plain HTML, CSS and JavaScript that also runs by double-clicking a file.
+
+New games are added over time. See "Adding a new game" below.
+
+| Game | Subject | Ages | Leaderboards |
+|---|---|---|---|
+| **Shred the Globe** | Geography (skate-themed) | Middle school | 8 boards (mode × game × World/USA) |
+| **Rocket Builder** | Math: + − × ÷ (space adventure) | Elementary | 3 boards (Cadet, Pilot, Captain) |
 
 ## Play it on this computer
 
@@ -25,14 +36,7 @@ On the home page, each game card shows its subject (black tag) and age level (re
 
 Each run is 15 rounds: 1 point per correct answer, and the faster time breaks ties. The clock pauses while the fact cards are open.
 
-**Where scores are saved:** every game on the site shares **one** online leaderboard, a Google Sheet you own, so every player sees the same Top 10 boards. See [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md). Until then, or whenever the internet is down, each device keeps its own scores so the game always works.
-
-**Security & privacy:**
-- The leaderboard script can only use its own spreadsheet, and visitors can only read the Top 10 and submit checked scores.
-- The game pages tell the browser to run code only from this site, and to send data only to the leaderboard.
-- There are no ads, trackers or analytics. The only player info stored is 3-letter initials.
-
-See "Keeping it safe" in [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md).
+**Where scores are saved:** on the shared Homeschool Arcade leaderboard (see "Leaderboards" below). If the internet is down, each device keeps its own scores so the game always works.
 
 ## Rocket Builder
 
@@ -56,11 +60,48 @@ A little space explorer crash-lands and has to rebuild the rocket. There are 4 p
 - **Controls:** arrow keys or WASD to walk, Space to zap, 1–4 (or click, or Enter on the outlined answer) to answer, M for the map, Esc to pause. Space never picks an answer, so zapping can't answer a problem by accident. On a tablet or phone, there's an on-screen joystick and a zap button.
 - **Saving:** progress saves in the browser on this device, and "Keep going" picks up on the same planet.
 - **Leaderboard:** one Top 10 per level (Cadet, Pilot, Captain) on the shared arcade leaderboard. The score is the number of stars collected across all 4 planets, and a faster play time breaks ties (the clock stops while the game is paused). A score that makes the Top 10 gets arcade-style initials at the end, and "★ TOP 10" on the title screen shows the boards.
-- **For grown-ups:** add `?debug&world=3&level=1` to the game's address to jump to a planet (world 1–4, level 0–2). In debug mode the browser console also confirms that every part on every planet can be reached.
+- **For grown-ups:** add `?debug&world=3&level=1` to the game's address to jump to a planet (world 1–4, level 0–2). A run started this way is a **practice run**: it skips planets, so its score never goes on the leaderboard. In debug mode the browser console also confirms that every part on every planet can be reached.
 
 All the art, music and sound effects are made by the game's own code, so there are no image, sound or font files to download.
 
-## Where the facts come from
+## Leaderboards (one sheet for every game)
+
+All games save high scores to **one Google Sheet you own** (renamed "Homeschool Arcade Leaderboard"), through a small Google Apps Script. Each game has its own boards in the same **Scores** tab, and the **Board** column says which game a row belongs to. Shred the Globe's boards start with `standard:` or `skate:`, and every other game's boards start with the game's name, like `rocket-builder:cadet`.
+
+- The script's web address is set in one place: `shared/arcade-config.js`.
+- Games use `shared/leaderboard.js` to read the Top 10 and save scores. If the sheet can't be reached, scores are kept on the device instead.
+- The script (`tools/leaderboard/Code.gs`, version 3) lists every game's boards and what a believable score looks like. To check which version is live, add `?action=ping` to the end of the script's web address (not the website's).
+- Setup, updates and managing scores: [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md).
+
+## Security & privacy
+
+Checked across the whole site in November 2026:
+
+- **What leaves the device:** only leaderboard requests to Google (which board to show, and a new score with 3-letter initials, points and time). There are no names, emails, locations, ads, trackers or analytics. Google can see each visitor's internet address when the leaderboard loads, like any website.
+- **What stays on the device:** game progress, settings, the last initials typed, and offline scores, in the browser's own storage.
+- **Read-aloud** uses the device's built-in voice. Some browsers use an online voice, which sends only the game's own words (like "7 plus 5") to that voice service.
+- **The pages only run code from this site:** each game page has a security policy that blocks outside scripts and only lets data go to the leaderboard. The home page runs no scripts at all, so its About pop-up uses the browser's built-in pop-up feature.
+- **Leaderboard text can't inject anything.** Rocket Builder draws everything as pixels, and Shred the Globe makes all leaderboard text safe before showing it. Initials are letters A–Z only (checked in the game and again by the script), and rude 3-letter words are blocked.
+- **The leaderboard script can only touch its own spreadsheet** (`@OnlyCurrentDoc`). It only accepts the known game boards and believable scores, at most 30 saves a minute, and it keeps the best 50 scores per board.
+- **A damaged or hand-edited Rocket Builder save** is ignored (the game starts fresh) instead of crashing, and impossible values are reset.
+- **Known limit:** like any site without logins, a determined tech-savvy person could still send a fake but believable score. If one shows up, delete its row in the sheet.
+- **The code history is clean:** no emails, passwords, keys or computer paths have ever been committed, and commits use GitHub's private no-reply address.
+
+## Adding a new game
+
+A checklist so every new game fits the arcade:
+
+1. Make a folder for it, like `my-game/`, with its own `index.html`, an icon in `img/icon.svg`, and a security policy line like Rocket Builder's. Keep all files on this site, with no outside scripts or fonts.
+2. Add a card on the home page `index.html` with its subject and age tags (`data-subjects`, `data-ages`).
+3. Leaderboard:
+   - Load `../shared/arcade-config.js` and `../shared/leaderboard.js` in the game.
+   - Pick board names that start with the game's name (`my-game:...`).
+   - Add the game to `GAMES` in `tools/leaderboard/Code.gs`.
+   - After pushing, re-paste the script and publish a new version (steps in LEADERBOARD-SETUP.md).
+4. Keep reading light for young players, make sure it works with touch (and keep on-screen buttons clear of phone system bars), and add a "Back to arcade" link.
+5. Add the game to the table at the top of this README and to the folder guide.
+
+## Where Shred the Globe's facts come from
 
 - Every fact shows its source link in the game. Facts were checked in November 2026 against Encyclopaedia Britannica and Wikipedia. Anything that couldn't be confirmed was left out.
 - Country populations come from the World Bank, 2025 estimates.

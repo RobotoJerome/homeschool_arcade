@@ -267,7 +267,8 @@
         const skip = this.t > 1 && (I.hit('ok') || I.taps().length);
         if ((this.t > 4 || skip) && this.st.state === 'ready') {
           const LB = window.ArcadeBoards;
-          if (LB && LB.qualifies(this.st.list, this.score, this.time)) {
+          // Practice runs (started with the grown-up shortcut that skips planets) never go on the shared leaderboard.
+          if (LB && !RB.G.practice && LB.qualifies(this.st.list, this.score, this.time)) {
             this.phase = 'initials'; A.play('power');
             UI.talk('New high score! Type your initials.');
             this.ini = RB.Scores.initials((ini) => this.saveScore(ini), () => { this.phase = 'board'; });
@@ -315,7 +316,8 @@
       const p = UI.panel(g, 300, 226);
       F.draw(g, 'TOP 10 - ' + M.LEVELS[this.level].name, p.x + p.w / 2, p.y + 7, { s: 2, c: '#ffd23f', a: 'center', o: INK, sh: '#ff4d5e' });
       RB.Scores.drawTable(g, this.st, p.x + 8, p.y + 26, p.w - 16, this.newId);
-      if (!this.newId) F.draw(g, 'YOU GOT ★' + this.score + ' IN ' + RB.Scores.fmt(this.time), p.x + p.w / 2, p.y + p.h - 44, { c: '#ffffff', a: 'center' });
+      if (RB.G.practice) F.draw(g, 'PRACTICE RUN - NOT ON THE LEADERBOARD', p.x + p.w / 2, p.y + p.h - 44, { c: '#ff8a9a', a: 'center' });
+      else if (!this.newId) F.draw(g, 'YOU GOT ★' + this.score + ' IN ' + RB.Scores.fmt(this.time), p.x + p.w / 2, p.y + p.h - 44, { c: '#ffffff', a: 'center' });
       const bw = 96;
       this.menu.items.forEach((it, i) => { it.r = { x: Math.round(p.x + p.w / 2 - bw - 5 + i * (bw + 10)), y: p.y + p.h - 30, w: bw, h: 24 }; UI.button(g, it, i === this.menu.focus, { fill: i ? '#ffffff' : '#ffd23f', top: '#fff' }); });
     },

@@ -324,7 +324,7 @@
       F.draw(g, 'PAUSED', p.x + p.w / 2, p.y + 10, { s: 2, c: '#ffd23f', a: 'center', o: INK });
       const bw = Math.floor((p.w - 30) / 2);
       items.forEach((it, i) => { it.r = { x: p.x + 10 + (i % 2) * (bw + 10), y: p.y + 34 + Math.floor(i / 2) * 32, w: bw, h: 26 }; UI.button(g, it, i === S.menu.focus, { fill: i === 0 ? '#5dff9e' : '#ffffff', top: '#fff' }); });
-      F.draw(g, 'PLANET ' + (RB.G.world + 1) + ' - ' + M.LEVELS[RB.G.level].name, p.x + p.w / 2, p.y + p.h - 12, { c: '#8d8ab3', a: 'center' });
+      F.draw(g, 'PLANET ' + (RB.G.world + 1) + ' - ' + M.LEVELS[RB.G.level].name + (RB.G.practice ? ' - PRACTICE' : ''), p.x + p.w / 2, p.y + p.h - 12, { c: '#8d8ab3', a: 'center' });
     };
     P.modal = S;
   };

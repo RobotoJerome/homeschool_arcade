@@ -45,7 +45,7 @@
   // ---------------- arcade initials (3 letters) ----------------
   // Type letters, or use the up/down arrows (tap them on a tablet). Enter saves.
   Sc.initials = function (onSave, onSkip) {
-    const last = (RB.store.get('initials') || 'AAA').padEnd(3, 'A').slice(0, 3);
+    const last = String(RB.store.get('initials') || 'AAA').toUpperCase().replace(/[^A-Z]/g, '').padEnd(3, 'A').slice(0, 3);
     const W = { letters: last.split(''), pos: 0, err: '', t: 0, busy: false, r: {} };
     const bump = (i, d) => { const c = W.letters[i].charCodeAt(0) - 65; W.letters[i] = String.fromCharCode(65 + ((c + d + 26) % 26)); A.play('click'); W.err = ''; };
     function save() {

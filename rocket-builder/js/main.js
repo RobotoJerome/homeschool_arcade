@@ -17,13 +17,26 @@
     RB.saveGame();
   };
   RB.saveGame = function () { if (RB.G) RB.store.set('save', RB.G); };
+  // Reads the saved game. Anything damaged or hand-edited is ignored (start fresh) instead of crashing the game.
   RB.loadGame = function () {
     const s = RB.store.get('save');
-    if (!s || s.v !== 1 || typeof s.world !== 'number' || s.world < 0 || s.world > 3 || !s.ab || !s.ws || !s.stats) return null;
-    s.ws = Object.assign(freshWorld(), s.ws);
-    s.ab = Object.assign(RB.newAbilities(), s.ab);
+    const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
+    const whole = (n, lo, hi) => Number.isInteger(n) && n >= lo && n <= hi;
+    if (!isObj(s) || s.v !== 1 || !whole(s.world, 0, 3) || !whole(s.level, 0, 2) || !isObj(s.ab) || !isObj(s.ws) || !isObj(s.stats)) return null;
+    const ws = Object.assign(freshWorld(), s.ws);
+    const nums = (a, lo, hi) => Array.isArray(a) && a.every((n) => whole(n, lo, hi));
+    if (!nums(ws.opened, 1, 4) || !nums(ws.gems, 0, 99) || !Array.isArray(ws.aliens) || !Array.isArray(ws.powers) || !ws.powers.every((p) => Object.prototype.hasOwnProperty.call(RB.POWERS, p))) return null;
+    if (!Array.isArray(ws.broken) || !ws.broken.every((b) => Array.isArray(b) && b.length === 2 && whole(b[0], 0, 99) && whole(b[1], 0, 99))) return null;
+    ws.boss = ws.boss === true;
+    s.ws = ws;
+    const ab = Object.assign(RB.newAbilities(), s.ab);
+    ab.laser = whole(ab.laser, 1, 3) ? ab.laser : 1; ab.maxHearts = whole(ab.maxHearts, 3, 6) ? ab.maxHearts : 3;
+    ['speed', 'spring', 'rocket', 'magnet'].forEach((k) => { ab[k] = ab[k] === true; });
+    s.ab = ab;
+    for (const k of ['solved', 'wrong', 'zapped', 'gems']) if (!whole(s.stats[k], 0, 1e6)) s.stats[k] = 0;
     // Games saved before play time was tracked: assume about 10 minutes per finished planet.
-    if (typeof s.stats.timeMs !== 'number') s.stats.timeMs = s.world * 10 * 60000;
+    if (!(typeof s.stats.timeMs === 'number' && isFinite(s.stats.timeMs) && s.stats.timeMs >= 0)) s.stats.timeMs = s.world * 10 * 60000;
+    s.practice = s.practice === true;
     return s;
   };
   // every rocket part found so far (all earlier planets + this one)
@@ -72,7 +85,8 @@
     const q = new URLSearchParams(window.location.search), wq = parseInt(q.get('world'), 10), lq = parseInt(q.get('level'), 10);
     if (wq >= 1 && wq <= 4) {
       RB.newGame(lq >= 0 && lq <= 2 ? lq : 0);
-      const G = RB.G; G.world = wq - 1;
+      // A shortcut run skips planets, so it's practice only: it never goes on the shared leaderboard.
+      const G = RB.G; G.world = wq - 1; G.practice = true;
       const ab = G.ab; if (wq >= 2) { ab.speed = true; ab.spring = true; } if (wq >= 3) { ab.laser = 2; ab.maxHearts = 4; } if (wq >= 4) { ab.rocket = true; ab.maxHearts = 5; }
       RB.go('play');
     } else RB.go('title');
