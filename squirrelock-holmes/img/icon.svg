@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#3b1d73"/>
+  <circle cx="32" cy="32" r="27" fill="#6a35d9"/>
+  <!-- tail -->
+  <path d="M42 58 C60 54 62 32 54 20 C50 14 42 14 42 22 C42 28 50 28 52 34 C54 44 46 52 38 54 Z" fill="#c65a2e" stroke="#170d22" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- body and head -->
+  <path d="M12 64 C12 52 22 47 32 47 C42 47 52 52 52 64 Z" fill="#5d4a33" stroke="#170d22" stroke-width="2.5"/>
+  <path d="M32 17 C44 17 50 25 50 34 C50 44 42 50 32 50 C22 50 14 44 14 34 C14 25 20 17 32 17 Z" fill="#c65a2e" stroke="#170d22" stroke-width="2.5"/>
+  <ellipse cx="32" cy="41" rx="10" ry="7" fill="#f6d2a6"/>
+  <circle cx="26" cy="32" r="4" fill="#fff" stroke="#170d22" stroke-width="1.5"/><circle cx="38" cy="32" r="4" fill="#fff" stroke="#170d22" stroke-width="1.5"/>
+  <circle cx="27" cy="33" r="2" fill="#170d22"/><circle cx="39" cy="33" r="2" fill="#170d22"/>
+  <path d="M29 37 Q32 35 35 37 Q34 40 32 40 Q30 40 29 37 Z" fill="#3a1f2a"/>
+  <!-- deerstalker cap -->
+  <path d="M14 26 C10 26 6 30 8 32 C12 31 16 30 20 28 Z M50 26 C54 26 58 30 56 32 C52 31 48 30 44 28 Z" fill="#7d6a42" stroke="#170d22" stroke-width="2"/>
+  <path d="M15 28 C14 12 50 12 49 28 C40 25 24 25 15 28 Z" fill="#8f7a4c" stroke="#170d22" stroke-width="2.5"/>
+  <path d="M22 18 L26 27 M32 15 V26 M42 18 L38 27" stroke="#5e4e2c" stroke-width="1.5"/>
+  <!-- magnifying glass -->
+  <circle cx="47" cy="45" r="7" fill="#cfe2ff" fill-opacity=".5" stroke="#ffd23f" stroke-width="3"/>
+  <path d="M52 50 L58 57" stroke="#170d22" stroke-width="4" stroke-linecap="round"/>
+</svg>

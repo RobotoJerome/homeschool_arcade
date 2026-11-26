@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Security: the browser may only run code and load files from this site, and may only send data to the shared leaderboard. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src https://script.google.com https://script.googleusercontent.com; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Squirrelock Holmes · Homeschool Arcade</title>
+  <meta name="description" content="A point-and-click squirrel mystery that teaches logic: observe, infer, deduce, and rule out every wrong answer.">
+  <meta name="theme-color" content="#140b20">
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <noscript><p class="noscript">Squirrelock Holmes needs JavaScript turned on to run.</p></noscript>
+
+  <div id="app">
+    <!-- ============ TITLE ============ -->
+    <section class="screen screen--title is-active" id="scr-title" aria-labelledby="title-logo">
+      <svg class="backdrop" id="title-art" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"></svg>
+      <div class="backdrop-fog" aria-hidden="true"></div>
+      <div class="corner-bar">
+        <a class="arcade-link" href="../index.html" aria-label="Back to Homeschool Arcade"><img src="../img/arcade-icon.svg" alt="" width="26" height="26"> <span class="arcade-link__txt">Homeschool Arcade</span></a>
+        <span class="corner-bar__right">
+        <button class="pill-btn js-speech" type="button" aria-pressed="false" aria-label="Read everything aloud" title="Read all the text aloud with your device's voice" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h12v2H4V5Zm0 4h12v2H4V9Zm0 4h8v2H4v-2Zm13.5-2.5 4 3.5-4 3.5v-7Z"/></svg><span><span class="pill-label">Read aloud: </span><b class="js-speech-state">Off</b></span>
+        </button>
+        <button class="icon-btn js-mute" type="button" aria-pressed="false" aria-label="Sound on" title="Sound on/off">
+          <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>
+          <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>
+        </button>
+        </span>
+      </div>
+      <div class="title-card">
+        <p class="kicker">Logic Zone · A Squirrel Mystery</p>
+        <h1 class="logo" id="title-logo"><span class="logo__a">Squirrelock</span><span class="logo__b">Holmes</span></h1>
+        <p class="tagline">Observe. Infer. Deduce. Name the culprit.</p>
+        <div class="title-actions">
+          <div class="title-actions__main">
+            <button class="btn btn--violet btn--xl" id="btn-take" type="button">Take a Case</button>
+          </div>
+          <div class="title-actions__more">
+            <button class="btn btn--paper" id="btn-top" type="button">Top 10</button>
+            <button class="btn btn--paper" id="btn-handbook" type="button">Logic Handbook</button>
+            <button class="btn btn--ghost" id="btn-howto" type="button">How to Play</button>
+          </div>
+        </div>
+      </div>
+      <div class="title-cast" id="title-cast" aria-hidden="true"></div>
+    </section>
+
+    <!-- ============ PICK A CASE ============ -->
+    <section class="screen screen--pick" id="scr-pick" aria-labelledby="pick-title">
+      <svg class="backdrop backdrop--dim" id="pick-art" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"></svg>
+      <div class="pick">
+        <div class="pick__head">
+          <button class="back-btn" type="button" data-nav="title">&larr; Back</button>
+          <h2 class="pick__title" id="pick-title">Choose your case</h2>
+        </div>
+        <div class="casefiles" id="casefiles"></div>
+        <p class="pick__note">Each case has several versions with different culprits, so it plays differently next time.</p>
+      </div>
+    </section>
+
+    <!-- ============ THE CASE ============ -->
+    <section class="screen screen--case" id="scr-case" aria-label="Investigation">
+      <header class="hud">
+        <div class="hud__left">
+          <button class="hud-btn" id="btn-pause" type="button" aria-label="Pause" title="Pause (P)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg><span class="hud-btn__txt">Pause</span>
+          </button>
+          <div class="hud__title"><span class="hud__case" id="hud-case"></span><span class="hud__tier" id="hud-tier"></span></div>
+        </div>
+        <div class="timer" id="timer" role="timer" aria-label="Case time">
+          <span class="timer__label">TIME</span>
+          <span class="timer__digits" id="timer-digits">00:00</span>
+          <span class="timer__pen" id="timer-pen" aria-live="polite"></span>
+        </div>
+        <div class="hud__right">
+          <button class="hud-btn" id="btn-hint" type="button" aria-label="Ask Watson for a hint (adds 30 seconds)" title="Ask Watson for a hint. Adds 30 seconds.">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Zm-3 17h6v1.5a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 20.5V19Z"/></svg><span class="hud-btn__txt">Ask Watson</span>
+          </button>
+          <button class="hud-btn" id="btn-notebook" type="button" aria-expanded="false" aria-controls="notebook" aria-label="Notebook" title="Notebook (N)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h11a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6V2Zm-2 3h2v2H4V5Zm0 4h2v2H4V9Zm0 4h2v2H4v-2Zm0 4h2v2H4v-2Zm6-11v2h6V6h-6Z"/></svg><span class="hud-btn__txt">Notebook</span><span class="badge" id="nb-count">0</span>
+          </button>
+          <button class="btn-solve" id="btn-solve" type="button" title="Name the culprit (S)">Solve!</button>
+          <button class="icon-btn icon-btn--hud js-mute" type="button" aria-pressed="false" aria-label="Sound on" title="Sound on/off">
+            <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>
+            <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>
+          </button>
+        </div>
+      </header>
+      <nav class="rooms" id="room-tabs" aria-label="Rooms"></nav>
+      <div class="stage-wrap" id="stage-wrap">
+        <div class="stage" id="stage">
+          <svg class="scene" id="scene" viewBox="0 0 1600 900" role="img" aria-label="The room" focusable="false"></svg>
+          <div class="amb" id="amb" aria-hidden="true"></div>
+          <div class="hotspots" id="hotspots" role="group" aria-label="Things to examine. Use Tab to move between them."></div>
+          <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+        </div>
+      </div>
+      <div class="witnesses" id="witnesses" role="group" aria-label="People to question"></div>
+
+      <aside class="notebook" id="notebook" aria-label="Detective's notebook" hidden>
+        <div class="notebook__head">
+          <h2>Detective's Notebook</h2>
+          <button class="icon-btn icon-btn--small" id="nb-close" type="button" aria-label="Close notebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>
+          </button>
+        </div>
+        <div class="connect" id="connect">
+          <div class="connect__slots">
+            <div class="connect__slot" id="pin-a">Pin a clue</div>
+            <span class="connect__plus" aria-hidden="true">+</span>
+            <div class="connect__slot" id="pin-b">Pin a clue</div>
+          </div>
+          <button class="btn btn--violet btn--sm" id="btn-connect" type="button" disabled>Connect</button>
+          <p class="connect__help">Pin two entries, then Connect them. A real link becomes a <strong>Deduction</strong>.</p>
+        </div>
+        <div class="notebook__body" id="nb-body"></div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- ============ DIALOGS ============ -->
+  <dialog class="talk" id="dlg-talk" aria-labelledby="talk-name">
+    <div class="talk__portrait" id="talk-portrait"></div>
+    <div class="talk__box">
+      <p class="talk__name" id="talk-name"></p>
+      <p class="talk__tag" id="talk-tag" hidden></p>
+      <p class="talk__text" id="talk-text"></p>
+      <div class="talk__actions">
+        <button class="mini-btn mini-btn--ghost" id="talk-say" type="button" hidden>Read aloud</button>
+        <button class="btn btn--violet btn--sm" id="talk-next" type="button">Continue &#9656;</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet closeup" id="dlg-closeup" aria-labelledby="cu-name"></dialog>
+  <dialog class="sheet brief" id="dlg-brief" aria-labelledby="brief-title"></dialog>
+  <dialog class="sheet solve" id="dlg-solve" aria-labelledby="solve-title"></dialog>
+  <dialog class="closed" id="dlg-closed" aria-labelledby="closed-title"></dialog>
+  <dialog class="sheet info" id="dlg-info" aria-labelledby="info-title"></dialog>
+  <dialog class="sheet pause" id="dlg-pause" aria-labelledby="pause-title"></dialog>
+
+  <div class="banner" id="banner" aria-hidden="true"><div class="banner__band"><span class="banner__text" id="banner-text"></span><span class="banner__sub" id="banner-sub"></span></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../shared/arcade-config.js"></script>
+  <script src="../shared/leaderboard.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/art/kit.js"></script>
+  <script src="js/art/props.js"></script>
+  <script src="js/art/portraits.js"></script>
+  <script src="js/art/rooms/oak-street.js"></script>
+  <script src="js/art/rooms/trophy-room.js"></script>
+  <script src="js/art/rooms/bank-office.js"></script>
+  <script src="js/art/rooms/counting-room.js"></script>
+  <script src="js/art/rooms/gear-room.js"></script>
+  <script src="js/art/rooms/workshop.js"></script>
+  <script src="js/art/rooms/station.js"></script>
+  <script src="js/fx.js"></script>
+  <script src="js/dialogue.js"></script>
+  <script src="js/notebook.js"></script>
+  <script src="js/play.js"></script>
+  <script src="js/scores.js"></script>
+  <script src="js/screens.js"></script>
+  <script src="js/validate.js"></script>
+  <script src="cases/manifest.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

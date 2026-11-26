@@ -1,0 +1,76 @@
+/* The Gilded Acorn, version B. Culprit: Pip Chestnut (spare key, lowered it out of the window on twine). */
+SQH.addCase({
+  id: 'gilded-acorn-b',
+  story: 'gilded-acorn',
+  roomState: { trophy: { window: 'open' } },
+  clues: [
+    { id: 'lock', room: 'trophy', spot: 'case', prop: 'case', draw: false, cat: 'physical', big: true,
+      name: 'The display case',
+      see: 'The glass case is still locked. The glass is whole and the lock hasn\'t a single scratch. The velvet cushion inside is empty.',
+      think: 'Nobody smashed or forced this case. It was opened with a key.' },
+    { id: 't-bushwick', room: 'trophy', who: 'bushwick', face: 'neutral', cat: 'testimony',
+      name: 'Lady Bushwick: the keys',
+      see: '"Only my President\'s key opens that case. Well, that and the spare, which the porter keeps locked away. Mine has been on my chain all night."',
+      think: 'Two keys, then: the President\'s, and a spare in the porter\'s keeping.' },
+    { id: 'sill', room: 'trophy', spot: 'sill', prop: 'twine', cat: 'physical', big: true,
+      name: 'Twine on the sill',
+      see: 'A thin groove is pressed into the wet moss on the window sill, and a strand of brown twine is caught on a splinter.',
+      think: 'Something was lowered out of this window on a string.' },
+    { id: 't-pip', room: 'trophy', who: 'pip', face: 'suspicious', cat: 'testimony',
+      name: 'Pip: his story',
+      see: '"Twine? Never use the stuff, sir. And I never touched the spare key. I was by the fire the whole time."',
+      think: 'Pip says he never touched the twine or the key. We shall see.' },
+    { id: 'note', room: 'trophy', spot: 'table', prop: 'note', cat: 'document',
+      name: 'Staff memo',
+      see: 'A staff memo on the side table: "SPARE CASE KEY: in the porter\'s cabinet. Code 1-8-4-2. Porter\'s eyes only."',
+      think: 'There IS a second key, and only the porter is meant to know where it is.' },
+    { id: 'cabinet', room: 'trophy', spot: 'cabinet', prop: 'cabinet', draw: false, cat: 'physical', needs: ['note'], big: true,
+      lock: 'A small cabinet with a four-number dial lock. We need the code.',
+      name: 'Porter\'s cabinet',
+      see: 'The hook for the spare key is empty. Beside it sits a ball of brown twine with a freshly cut end.',
+      think: 'The spare key is gone, and somebody cut a length of twine tonight.' },
+    { id: 'smear', room: 'trophy', spot: 'case', at: [868, 462], prop: 'smear', cat: 'physical', herring: true,
+      name: 'Lipstick smear',
+      see: 'A smudge of rose-pink lipstick high on the glass, at about nose height.',
+      think: 'Lady Bushwick wears that shade...' },
+    { id: 't-colonel', room: 'trophy', who: 'thistlewick', face: 'neutral', cat: 'testimony',
+      name: 'The Colonel: what he heard',
+      see: '"When the lights dipped I heard the window creak, then a soft whirr, like string running fast through someone\'s paws. Then a little thump down in the street."',
+      think: 'Something light went out of the window on a string.' }
+  ],
+  deductions: [
+    { id: 'd-twine', from: ['sill', 'cabinet'], kind: 'deductive', name: 'The porter\'s twine',
+      text: 'The twine on the sill matches the freshly cut ball in the porter\'s cabinet. The acorn went out of the window on the porter\'s twine.' },
+    { id: 'd-spare', from: ['lock', 'cabinet'], kind: 'inductive', name: 'The missing spare',
+      text: 'The case was opened with a key, and the spare key vanished from the porter\'s cabinet tonight. The spare is the likeliest key.' },
+    { id: 'd-string', from: ['sill', 't-colonel'], kind: 'inductive', name: 'The whirr',
+      text: 'The whirr the Colonel heard was twine running out over the sill.' }
+  ],
+  answers: [
+    { id: 'b1', who: 'pip', correct: true, proof: ['cabinet', 'd-twine'],
+      text: 'Pip Chestnut took the spare key from his cabinet, opened the case while the lights were low, and lowered the acorn out of the window on twine to his cousin, who promised to sell it and split the money.' },
+    { id: 'b2', who: 'bushwick',
+      text: 'Lady Bushwick opened the case with her President\'s key and hid the acorn in her hatbox to pay off secret debts.',
+      ruledOutBy: { 'd-twine': 'The acorn went out of the window on twine, Holmes. It never went into anyone\'s hatbox.', sill: 'That twine on the sill says the acorn left by the window, not in a hatbox.' } },
+    { id: 'b3', who: 'thistlewick',
+      text: 'Colonel Thistlewick picked the lock with his pocketknife and hid the acorn inside his walking cane.',
+      ruledOutBy: { lock: 'That lock hasn\'t a scratch on it. Nobody picked it.' } },
+    { id: 'b4', who: null,
+      text: 'A cat burglar climbed in through the open window and carried the acorn away down the ivy.',
+      ruledOutBy: { sill: 'There\'s only a thin string groove on that wet sill. No paw prints, no tail prints. Nobody climbed through.' } },
+    { id: 'b5', who: 'pip',
+      text: 'Pip Chestnut cracked the case with a slingshot shot and grabbed the acorn in the dark.',
+      ruledOutBy: { lock: 'The glass is whole, Holmes. Nobody cracked that case.' } }
+  ],
+  walkthrough: [
+    { text: 'The case was locked and whole, so it was opened with a key.', uses: ['lock'] },
+    { text: 'Lady Bushwick mentioned a spare key in the porter\'s keeping, and the staff memo told us where it was kept.', uses: ['t-bushwick', 'note'] },
+    { text: 'In the porter\'s cabinet: the spare key gone, and a ball of twine freshly cut. The spare is the likeliest key.', uses: ['cabinet', 'd-spare'] },
+    { text: 'The same twine was caught on the window sill, and the Colonel heard string whirring out of the window. Deduction: the acorn was lowered out on the porter\'s twine.', uses: ['sill', 't-colonel', 'd-string', 'd-twine'] },
+    { text: 'The porter guarded the spare key and the twine, and Pip denied touching either. The evidence says otherwise.', uses: ['t-pip'] },
+    { text: 'Pip\'s cousin was found at the corner with the acorn still tied to its string. Pip was very sorry indeed.', uses: [] }
+  ],
+  traps: [
+    { id: 'smear', why: 'The lipstick pointed at Lady Bushwick, but it was high on the glass at nose height, not by the keyhole. She had only leaned in to admire the prize, and the acorn left by the window anyway.' }
+  ]
+});

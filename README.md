@@ -15,6 +15,7 @@ New games are added over time. See "Adding a new game" below.
 |---|---|---|---|
 | **Shred the Globe** | Geography (skate-themed) | Middle school | 8 boards (mode × game × World/USA) |
 | **Rocket Builder** | Math: + − × ÷ (space adventure) | Elementary | 3 boards (Cadet, Pilot, Captain) |
+| **Squirrelock Holmes** | Logic: deduction (squirrel mystery) | High school | 3 boards (Easy, Medium, Hard) |
 
 ## Play it on this computer
 
@@ -64,13 +65,34 @@ A little space explorer crash-lands and has to rebuild the rocket. There are 4 p
 
 All the art, music and sound effects are made by the game's own code, so there are no image, sound or font files to download.
 
+## Squirrelock Holmes
+
+A point-and-click mystery that teaches logic. Squirrelock Holmes and Dr. Walnut Watson (with their landlady Mrs. Nutson at 221B Oak Street, and their rival Professor Gnawriarty) solve cases in Victorian squirrel London. The player examines things in each illustrated room, questions suspects, connects clues into deductions, and names the culprit.
+
+| Level | Story | Rooms | Suspects |
+|---|---|---|---|
+| Easy ★ | **The Gilded Acorn**: a prize vanishes from a locked case | Trophy Room | Lady Bushwick, Pip Chestnut, Colonel Thistlewick |
+| Medium ★★ | **The Forged Seal**: a sealed order empties the hospital fund | Manager's Office, Counting Room (locked) | Mr. Cashew, Miss Sorrel, Barnaby Burrows, Percy Pinecroft |
+| Hard ★★★ | **The Night Bushy Ben Stopped**: the clock tower is sabotaged | Gear Room, Workshop (locked), Paddingtail Station (locked) | Professor Gnawriarty, Master Tock, Wren Whiskerton, Alderman Rootley, Madame Plume |
+
+- **Three versions of every story.** Each version has a different culprit, method, clues, clue places and red herrings. The game picks one at random and never repeats the last one played.
+- **What it teaches:** every close-up separates the *observation* (what we see) from the *inference* (what it might mean). Pinning two notebook entries and pressing Connect makes a *deduction*, labeled deductive, inductive, ruling out, timeline or alibi. Every wrong answer is ruled out by at least one clue, and each case has red herrings (Hard adds a convincing false theory). The **Logic Handbook** on the title screen defines the terms, with sources (Merriam-Webster, Britannica, the Internet Encyclopedia of Philosophy, and Conan Doyle's *The Sign of Four* on Wikisource, checked November 2026).
+- **Locks and clue chains:** a padlock means something must be found first (Easy 1 lock deep, Medium 2, Hard 3, with locked rooms).
+- **Solving:** the Solve! button is always there. A wrong accusation adds 1:00, and Watson names the clue that rules it out (without giving away the answer). The right answer only closes the case once the notebook holds the proof; if it doesn't yet, Watson says so with no penalty. "Ask Watson" gives a hint for +0:30.
+- **CASE CLOSED:** Holmes walks through the reasoning step by step, shows which red herrings were traps, then shows the time.
+- **Leaderboard:** one Top 10 per level (Easy, Medium, Hard), fastest time with penalties. Each solve counts as 1 point on the shared sheet, so the board is simply sorted by time.
+- **Access:** keyboard play (Tab between things to examine, N notebook, S solve, 1–3 rooms, P or Esc pause), labels and icons as well as colors, reduced motion respected, and a mute button. **Read aloud:** every dialogue line, clue close-up, briefing card and explanation step has a "Read aloud" button, and the "Read aloud: On/Off" switch (title screen corner, or the pause menu) reads everything automatically. It uses the voice built into the device.
+- **Art:** every room and character is drawn by code (SVG), with no image files. Each room's drawing is its own file in `js/art/rooms/`, so it can be swapped for illustrated art later; just keep the spot names.
+- **Adding a case:** copy a `case-*.js` file in `squirrelock-holmes/cases/<story>/`, change the data, add its path to `cases/manifest.js`, then open `squirrelock-holmes/validate.html`. The checker plays every case and lists any problem: clues that can't be reached, a right answer without proof, a wrong answer nothing rules out, Watson giving away the culprit, two clue badges that would sit on top of each other, or a level's counts being off. No code changes are needed.
+- **For grown-ups:** add `?debug` to the game's address to run the checker in the browser console, or `?debug&case=bushy-ben-b` to open one exact version as a practice run (never saved to the leaderboard).
+
 ## Leaderboards (one sheet for every game)
 
 All games save high scores to **one Google Sheet you own** (renamed "Homeschool Arcade Leaderboard"), through a small Google Apps Script. Each game has its own boards in the same **Scores** tab, and the **Board** column says which game a row belongs to. Shred the Globe's boards start with `standard:` or `skate:`, and every other game's boards start with the game's name, like `rocket-builder:cadet`.
 
 - The script's web address is set in one place: `shared/arcade-config.js`.
 - Games use `shared/leaderboard.js` to read the Top 10 and save scores. If the sheet can't be reached, scores are kept on the device instead.
-- The script (`tools/leaderboard/Code.gs`, version 3) lists every game's boards and what a believable score looks like. To check which version is live, add `?action=ping` to the end of the script's web address (not the website's).
+- The script (`tools/leaderboard/Code.gs`, version 4, which adds Squirrelock Holmes) lists every game's boards and what a believable score looks like. To check which version is live, add `?action=ping` to the end of the script's web address (not the website's).
 - Setup, updates and managing scores: [LEADERBOARD-SETUP.md](LEADERBOARD-SETUP.md).
 
 ## Security & privacy
@@ -81,7 +103,7 @@ Checked across the whole site in November 2026:
 - **What stays on the device:** game progress, settings, the last initials typed, and offline scores, in the browser's own storage.
 - **Read-aloud** uses the device's built-in voice. Some browsers use an online voice, which sends only the game's own words (like "7 plus 5") to that voice service.
 - **The pages only run code from this site:** each game page has a security policy that blocks outside scripts and only lets data go to the leaderboard. The home page runs no scripts at all, so its About pop-up uses the browser's built-in pop-up feature.
-- **Leaderboard text can't inject anything.** Rocket Builder draws everything as pixels, and Shred the Globe makes all leaderboard text safe before showing it. Initials are letters A–Z only (checked in the game and again by the script), and rude 3-letter words are blocked.
+- **Leaderboard text can't inject anything.** Rocket Builder draws everything as pixels, and Shred the Globe and Squirrelock Holmes make all leaderboard text safe before showing it. Initials are letters A–Z only (checked in the game and again by the script), and rude 3-letter words are blocked.
 - **The leaderboard script can only touch its own spreadsheet** (`@OnlyCurrentDoc`). It only accepts the known game boards and believable scores, at most 30 saves a minute, and it keeps the best 50 scores per board.
 - **A damaged or hand-edited Rocket Builder save** is ignored (the game starts fresh) instead of crashing, and impossible values are reset.
 - **Known limit:** like any site without logins, a determined tech-savvy person could still send a fake but believable score. If one shows up, delete its row in the sheet.
@@ -138,6 +160,22 @@ rocket-builder/
   js/scenes.js             title, level picker, planet intro, blast-off, ending
   js/scores.js             Top 10 screen and initials (uses the shared leaderboard)
   js/main.js               saving progress and the main loop
+squirrelock-holmes/
+  index.html               the game page
+  validate.html            the case checker (open it after changing a case)
+  css/style.css            look & feel (violet Logic accent, site fonts)
+  js/core.js               saving, sound, read-aloud, the timer, the case list
+  js/rules.js              the rules of a case (shared by the game and the checker)
+  js/play.js               rooms, things to examine, witnesses, hints, accusing
+  js/notebook.js           the notebook and Connect (deductions)
+  js/dialogue.js           the talking-portrait dialogue box
+  js/screens.js            title, case picker, briefing, Solve, CASE CLOSED, Logic Handbook
+  js/scores.js             Top 10 boards and initials (uses the shared leaderboard)
+  js/fx.js                 sparks, shake, the DEDUCTION! banner
+  js/validate.js           the case checker's tests
+  js/art/                  drawing kit, clue props, character portraits, one file per room
+  cases/manifest.js        the list of case files
+  cases/<story>/           story.js (rooms, suspects, briefing) + case-a/b/c.js (the versions)
 tools/
   source/*.json            the hand-checked country & state facts (edit these)
   build-data.ps1           rebuilds data/geo-data.js (can refresh populations)

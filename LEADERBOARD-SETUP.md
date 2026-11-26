@@ -8,7 +8,7 @@ Until the leaderboard is set up (or whenever the internet is down), the games st
 
 ## Updating the script (about 3 minutes)
 
-**Current status:** version 3 (one sheet for all games) has been live since November 22, 2026. The spreadsheet is called **Homeschool Arcade Leaderboard**, and it holds Shred the Globe's and Rocket Builder's scores.
+**Current status:** version 3 (one sheet for all games) has been live since November 22, 2026. The spreadsheet is called **Homeschool Arcade Leaderboard**, and it holds Shred the Globe's and Rocket Builder's scores. **Version 4** adds Squirrelock Holmes's three boards (`squirrelock-holmes:easy`, `:medium`, `:hard`). It goes live once it's pushed and you do the steps below; until then, Squirrelock Holmes keeps its scores on each device.
 
 Repeat these steps whenever the script changes, for example when a new game is added. The web address stays the same, and existing scores are kept.
 
@@ -19,7 +19,7 @@ Repeat these steps whenever the script changes, for example when a new game is a
    The second line of the right version reads **"Homeschool Arcade — one shared online leaderboard for EVERY game"**. If you just pushed a change and still see an older copy, your browser saved it for up to 5 minutes: press **Ctrl + F5** to reload it fresh.
 4. Click the **Save** 💾 icon.
 5. Click **Deploy → Manage deployments**, click the pencil ✏️ icon, set **Version** to **New version**, and click **Deploy**. (If Google asks you to approve access again, use the same Advanced → Go to … (unsafe) → Allow steps as in part 3 below.)
-6. Check it: open your **script's** web app address (the `script.google.com/…/exec` one, not the website) with `?action=ping` added to the end. It shows the version number and the list of games, for example `{"ok":true,"version":3,"games":["shred-the-globe","rocket-builder"]}`.
+6. Check it: open your **script's** web app address (the `script.google.com/…/exec` one, not the website) with `?action=ping` added to the end. It shows the version number and the list of games, for example `{"ok":true,"version":4,"games":["shred-the-globe","rocket-builder","squirrelock-holmes"]}`.
 
 Saving in the editor isn't enough: the games only see the new script after step 5. Until then, a new game keeps its scores on each device.
 

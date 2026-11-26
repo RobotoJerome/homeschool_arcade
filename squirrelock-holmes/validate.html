@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Security: this page only runs code from this site and sends nothing anywhere. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Case checker · Squirrelock Holmes</title>
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/validate.css">
+</head>
+<body class="vpage">
+  <main class="vwrap">
+    <h1>Squirrelock Holmes case checker</h1>
+    <p>This page plays every case "perfectly" using the game's own rules and checks that it is fair: every clue can be reached, the right answer can be proven, and every wrong answer is ruled out by something the player can find.</p>
+    <p id="v-summary" class="vsum" role="status">Checking...</p>
+    <div id="v-stories"></div>
+    <div id="v-results"></div>
+    <p><a href="index.html">&larr; Back to the game</a></p>
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/art/kit.js"></script>
+  <script src="js/art/props.js"></script>
+  <script src="js/art/portraits.js"></script>
+  <script src="js/art/rooms/oak-street.js"></script>
+  <script src="js/art/rooms/trophy-room.js"></script>
+  <script src="js/art/rooms/bank-office.js"></script>
+  <script src="js/art/rooms/counting-room.js"></script>
+  <script src="js/art/rooms/gear-room.js"></script>
+  <script src="js/art/rooms/workshop.js"></script>
+  <script src="js/art/rooms/station.js"></script>
+  <script src="js/validate.js"></script>
+  <script src="cases/manifest.js"></script>
+  <script src="js/validate-page.js"></script>
+</body>
+</html>

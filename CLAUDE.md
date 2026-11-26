@@ -18,13 +18,14 @@ Learning games for a homeschool family, live at https://homeschoolarcade.games (
 ## Leaderboard (one sheet for all games)
 - Web app URL: `shared/arcade-config.js` (`ARCADE_CONFIG.leaderboardUrl`), the only place it lives.
 - Client helper: `shared/leaderboard.js` (`ArcadeBoards.list / add / qualifies / blocked`). It falls back to device storage when the sheet is unreachable or doesn't know a board. Shred the Globe has its own older client in `js/app.js` and reads the URL via `js/config.js`.
-- Server: `tools/leaderboard/Code.gs` (v3). `GAMES` maps each game to its board names and a `check(points, outOf, timeMs)` function. Shred's boards keep their original names (`standard:` / `skate:`); new games use `<game-folder>:<board>`.
+- Server: `tools/leaderboard/Code.gs` (v4: adds Squirrelock Holmes; v3 is what's live until the owner republishes). `GAMES` maps each game to its board names and a `check(points, outOf, timeMs)` function. Shred's boards keep their original names (`standard:` / `skate:`); new games use `<game-folder>:<board>`.
 - A new game means: add it to `GAMES`, push, then the owner pastes Code.gs into Apps Script and publishes a **New version** under Manage deployments (the URL stays the same). Steps are in `LEADERBOARD-SETUP.md`.
 - **Never post test scores to the live sheet.** Stub `ArcadeBoards` in the page, or run Code.gs against fake Google services on a page without a CSP (for example `README.md` served by `tools/serve.ps1`).
 
 ## Testing
 - Local server: `.claude/launch.json` runs `tools/serve.ps1` on port 8080.
 - Rocket Builder: `?debug&world=N&level=L` jumps to a planet (practice run, never posted to the leaderboard) and logs a check that every part can be reached. When the browser pane is hidden, animation pauses, so step the loop by hand (`RB.scene.update(dt)`, then draw).
+- Squirrelock Holmes: cases are data only (`squirrelock-holmes/cases/`). After any case change, open `squirrelock-holmes/validate.html` (or the game with `?debug`) and fix every failure. `?debug&case=<id>` opens one version as a practice run (never posted). The game pauses itself when the tab is hidden, and timers slow down in a hidden pane.
 
 ## Where things are
-See the folder guide in `README.md`. Games: `shred-the-globe/` (geography, middle school) and `rocket-builder/` (math, elementary).
+See the folder guide in `README.md`. Games: `shred-the-globe/` (geography, middle school), `rocket-builder/` (math, elementary) and `squirrelock-holmes/` (logic, high school).

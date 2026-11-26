@@ -1,0 +1,16 @@
+/* The case checker page (validate.html) */
+body.vpage { overflow: auto; }
+.vwrap { width: min(1100px, 100%); margin: 0 auto; padding: 24px 16px 60px; }
+.vwrap h1 { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; }
+.vwrap h2 { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; margin-top: 28px; }
+.vsum { padding: 12px 16px; font-size: 1.2rem; font-weight: 800; border: 3px solid #000; border-radius: 10px; color: var(--ink); background: var(--paper); }
+.vsum.is-pass { background: var(--green); }
+.vsum.is-fail { background: #ffb0a8; }
+.vtable { width: 100%; border-collapse: collapse; color: var(--ink); background: var(--paper); border: 3px solid #000; }
+.vtable th, .vtable td { padding: 6px 10px; border-bottom: 1px solid var(--paper-3); text-align: left; vertical-align: top; }
+.vtable th { background: var(--violet-ink); color: var(--paper); font-family: var(--f-display); font-weight: 400; letter-spacing: .04em; }
+.vtable td.good { font-weight: 800; color: var(--green-text); }
+.vtable td.bad { font-weight: 800; color: var(--red-text); }
+.vtable ul { margin: 4px 0 0; padding-left: 1.2em; font-weight: 500; color: var(--ink); }
+.vtable ul.warn { color: var(--muted-on-paper); }
+.vwrap a { color: var(--violet-2); font-weight: 700; }

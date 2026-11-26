@@ -21,7 +21,7 @@
 
 /** @OnlyCurrentDoc */
 
-const SCRIPT_VERSION = 3;
+const SCRIPT_VERSION = 4;
 const SHEET_NAME = 'Scores';      // the tab that holds the scores: renaming the spreadsheet is fine, but keep this tab's name
 const TOP_N = 10;
 const KEEP_PER_BOARD = 50;        // lower scores beyond the best 50 per board are removed automatically
@@ -49,6 +49,14 @@ const GAMES = {
     boards: ['rocket-builder:cadet', 'rocket-builder:pilot', 'rocket-builder:captain'],
     check: function (points, outOf, timeMs) {
       return outOf === 0 && points >= 1 && points <= 3000 && timeMs >= 3 * MINUTE && timeMs <= 72 * HOUR;
+    }
+  },
+  // Squirrelock Holmes (high-school logic): every solved case is 1 point, so the board ranks
+  // by fastest time (penalties included). One board per level.
+  'squirrelock-holmes': {
+    boards: ['squirrelock-holmes:easy', 'squirrelock-holmes:medium', 'squirrelock-holmes:hard'],
+    check: function (points, outOf, timeMs) {
+      return outOf === 0 && points === 1 && timeMs >= 20 * 1000 && timeMs <= 6 * HOUR;
     }
   }
 };
