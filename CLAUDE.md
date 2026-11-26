@@ -18,7 +18,7 @@ Learning games for a homeschool family, live at https://homeschoolarcade.games (
 ## Leaderboard (one sheet for all games)
 - Web app URL: `shared/arcade-config.js` (`ARCADE_CONFIG.leaderboardUrl`), the only place it lives.
 - Client helper: `shared/leaderboard.js` (`ArcadeBoards.list / add / qualifies / blocked`). It falls back to device storage when the sheet is unreachable or doesn't know a board. Shred the Globe has its own older client in `js/app.js` and reads the URL via `js/config.js`.
-- Server: `tools/leaderboard/Code.gs` (v4: adds Squirrelock Holmes; v3 is what's live until the owner republishes). `GAMES` maps each game to its board names and a `check(points, outOf, timeMs)` function. Shred's boards keep their original names (`standard:` / `skate:`); new games use `<game-folder>:<board>`.
+- Server: `tools/leaderboard/Code.gs` (v4, live since 2026-11-25; covers all three games). `GAMES` maps each game to its board names and a `check(points, outOf, timeMs)` function. Shred's boards keep their original names (`standard:` / `skate:`); new games use `<game-folder>:<board>`.
 - A new game means: add it to `GAMES`, push, then the owner pastes Code.gs into Apps Script and publishes a **New version** under Manage deployments (the URL stays the same). Steps are in `LEADERBOARD-SETUP.md`.
 - **Never post test scores to the live sheet.** Stub `ArcadeBoards` in the page, or run Code.gs against fake Google services on a page without a CSP (for example `README.md` served by `tools/serve.ps1`).
 

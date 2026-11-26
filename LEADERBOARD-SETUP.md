@@ -8,7 +8,7 @@ Until the leaderboard is set up (or whenever the internet is down), the games st
 
 ## Updating the script (about 3 minutes)
 
-**Current status:** version 3 (one sheet for all games) has been live since November 22, 2026. The spreadsheet is called **Homeschool Arcade Leaderboard**, and it holds Shred the Globe's and Rocket Builder's scores. **Version 4** adds Squirrelock Holmes's three boards (`squirrelock-holmes:easy`, `:medium`, `:hard`). It goes live once it's pushed and you do the steps below; until then, Squirrelock Holmes keeps its scores on each device.
+**Current status:** version 4 has been live since November 25, 2026. The spreadsheet is called **Homeschool Arcade Leaderboard**, and it holds the scores for Shred the Globe, Rocket Builder and Squirrelock Holmes (`squirrelock-holmes:easy`, `:medium`, `:hard`).
 
 Repeat these steps whenever the script changes, for example when a new game is added. The web address stays the same, and existing scores are kept.
 
